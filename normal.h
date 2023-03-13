@@ -1,7 +1,6 @@
 #ifndef NORMAL_H
 #define NORMAL_H
 
-#include "vector.h"
 
 template <typename T> 
 class Normal3{

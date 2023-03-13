@@ -2,6 +2,7 @@
 #define POINT_H
 
 #include "vector.h"
+#include "normal.h"
 
 
 template <typename T>
@@ -27,9 +28,14 @@ class Point3{
         Assert(!HasNaNs());
     }
 
-    template<U>
+    template<typename U>
     explicit operator Vector3<U>() const{
-        return Vector<U>(x, y, z);
+        return Vector3<U>(x, y, z);
+    }
+
+    template<typename U>
+    explicit operator Normal3<U>() const{
+        return Normal3<U>(x, y, z);
     }
 
     Point3<T> operator+(const Point3<T> &v) const{
