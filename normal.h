@@ -1,6 +1,8 @@
 #ifndef NORMAL_H
 #define NORMAL_H
 
+#include <cmath>
+#include <cassert>
 
 template <typename T> 
 class Normal3{
@@ -17,18 +19,18 @@ class Normal3{
     Normal3() {x = y = z = 0;}
 
     Normal3(T x, T y, T z): x{x}, y{y}, z{z} {
-        Assert(!HasNaNs());
+        assert(!HasNaNs());
     }
 
     T operator[](int i) const{
-        Assert(0 <= i && i <= 2);
+        assert(0 <= i && i <= 2);
         if(i == 0) return x;
         if (i == 1) return y;
         return z;
     }
 
     T &operator[](int i) {
-        Assert(0 <= i && i <= 2);
+        assert(0 <= i && i <= 2);
         if(i == 0) return x;
         if (i == 1) return y;
         return z;
@@ -76,13 +78,13 @@ class Normal3{
     }
 
     Normal3<T> operator/(T f) const{
-        Assert(f != 0);
+        assert(f != 0);
         float inv = (float) 1 / f;
         return Normal3(inv * x, inv * y, inv * z);
     }
 
     Normal3<T>& operator/=(T f){
-        Assert(f != 0);
+        assert(f != 0);
         float inv = (float) 1 / f;
         x *= inv;
         y *= inv;
@@ -111,7 +113,7 @@ inline Normal3<T> operator*(T s,const Normal3<T> &v) {
 
 template <typename T>
 Normal3<T> Abs(const Normal3<T> &v){
-    return Normal3(std::abs(v.x), std::abs(v.y), std::abs(v.z));
+    return Normal3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
 }
 
 template <typename T>
@@ -147,7 +149,7 @@ inline T AbsDot(const Vector3<T> &v1, const Normal3<T> &v2){
 
 template <typename T>
 inline Normal3<T> Cross(const Normal3<T> &v1, const Normal3<T> &v2){
-    return Normal3(v1.y * v2.z - v1.z * v2.y,
+    return Normal3<T>(v1.y * v2.z - v1.z * v2.y,
                 v1.z * v2.x - v1.x * v2.z,
                 v1.x * v2.y - v1.y * v2.x);
 }

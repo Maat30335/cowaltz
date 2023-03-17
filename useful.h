@@ -4,8 +4,11 @@
 #include <stdexcept>
 #include <string>
 #include <cmath>
+#include <random>
 
-void Error(std::string s){
+static const float OneMinusEpsilon = 0x1.fffffep-1;
+
+inline void Error(std::string s){
     throw std::runtime_error(s);
 }
 
@@ -22,5 +25,13 @@ inline bool Quadratic(float a, float b, float c, float *t0, float *t1){
     if (*t0 > *t1) std::swap(*t0, *t1);
     return true;
 }
+
+inline float random_float() {
+    static std::uniform_real_distribution<float> distribution(0.0, 1.0);
+    static std::mt19937 generator;
+    return distribution(generator);
+}
+
+
 
 #endif

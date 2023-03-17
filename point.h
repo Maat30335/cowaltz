@@ -3,6 +3,9 @@
 
 #include "vector.h"
 #include "normal.h"
+#include <cmath>
+#include <cassert>
+
 
 
 template <typename T>
@@ -20,12 +23,12 @@ class Point3{
     Point3() {x = y = z = 0;}
 
     Point3(T x, T y, T z): x{x}, y{y}, z{z} {
-        Assert(!HasNaNs());
+        assert(!HasNaNs());
     }
 
     template<typename U>
     explicit Point3(const Point3<U> &p): x{(T)p.x} , y{(T)p.y} , z{(T)p.z}{
-        Assert(!HasNaNs());
+        assert(!HasNaNs());
     }
 
     template<typename U>
@@ -39,7 +42,7 @@ class Point3{
     }
 
     Point3<T> operator+(const Point3<T> &v) const{
-        return Point3(x + v.x, y + v.y, z + v.z);
+        return Point3<T>(x + v.x, y + v.y, z + v.z);
     }
 
     Point3<T>& operator+=(const Point3<T> &v){
@@ -58,7 +61,7 @@ class Point3{
     }
 
     Point3<T> operator*(T s) const{
-        return Point3(s * x, s * y, s * z);
+        return Point3<T>(s * x, s * y, s * z);
     }
 
     Point3<T>& operator*=(T s){
@@ -69,13 +72,13 @@ class Point3{
     }
 
     Point3<T> operator/(T f) const{
-        Assert(f != 0);
+        assert(f != 0);
         float inv = (float) 1 / f;
-        return Point3(inv * x, inv * y, inv * z);
+        return Point3<T>(inv * x, inv * y, inv * z);
     }
 
     Point3<T>& operator/=(T f){
-        Assert(f != 0);
+        assert(f != 0);
         float inv = (float) 1 / f;
         x *= inv;
         y *= inv;
@@ -84,13 +87,13 @@ class Point3{
     }
 
     Point3<T> operator-() const{
-        return Point3(-x, -y, -z);
+        return Point3<T>(-x, -y, -z);
     }
 
 
     // You can add or subtract a vector to point to offset that point
     Point3<T> operator+(const Vector3<T> &v) const{
-        Point3(x + v.x, y + v.y, z + v.z);
+        return Point3<T>(x + v.x, y + v.y, z + v.z);
     }
 
     Point3<T> &operator+=(const Vector3<T> &v){
@@ -101,13 +104,13 @@ class Point3{
     }
 
     Point3<T> operator-(const Vector3<T> &v) const{
-        Point3<T>(x - p.x, y - p.y, z - p.z)
+        Point3<T>(x - v.x, y - v.y, z - v.z);
     }
 
     Point3<T> &operator-=(const Vector3<T> &v){
-        x -= p.x;
-        y -= p.y;
-        z -= p.z;
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
         return *this;
     }
 
@@ -133,5 +136,80 @@ Point3<T> Lerp(float t, const Point3<T> &p1, const Point3<T> &p2){
 
 typedef Point3<float> Point3f;
 typedef Point3<int>   Point3i;
+
+
+template <typename T>
+class Point2{
+    public:
+    // public data
+    T x, y;
+
+    // public methods
+
+    bool HasNaNs() {
+        return std::isnan(x) || std::isnan(y);
+    }
+
+    Point2() {x = y = 0;}
+
+    Point2(T x, T y): x{x}, y{y} {
+        assert(!HasNaNs());
+    }
+
+    template<typename U>
+    explicit Point2(const Point2<U> &p): x{(T)p.x} , y{(T)p.y}{
+        assert(!HasNaNs());
+    }
+
+    Point2<T> operator+(const Point2<T> &v) const{
+        return Point2(x + v.x, y + v.y);
+    }
+
+    Point2<T>& operator+=(const Point2<T> &v){
+        x =+ v.x;
+        y =+ v.y;
+        return *this;
+    }
+
+    bool operator==(const Point2<T> &v) const{
+        return x == v.x && y == v.y;;
+    }
+
+    bool operator!=(const Point2<T> &v) const{
+        return x != v.x || y != v.y;
+    }
+
+    Point2<T> operator*(T s) const{
+        return Point2(s * x, s * y);
+    }
+
+    Point2<T>& operator*=(T s){
+        x *= s;
+        y *= s;
+        return *this;
+    }
+
+    Point2<T> operator/(T f) const{
+        assert(f != 0);
+        float inv = (float) 1 / f;
+        return Point2(inv * x, inv * y);
+    }
+
+    Point2<T>& operator/=(T f){
+        assert(f != 0);
+        float inv = (float) 1 / f;
+        x *= inv;
+        y *= inv;
+        return *this;
+    }
+
+    Point2<T> operator-() const{
+        return Point2(-x, -y);
+    }
+};
+
+typedef Point2<float> Point2f;
+typedef Point2<int>   Point2i;
+
 
 #endif

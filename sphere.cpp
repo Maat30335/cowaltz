@@ -2,7 +2,7 @@
 #include "useful.h"
 
 
-bool Sphere::Intersect(const Ray &r, float *tHit, SurfaceInteraction *isect){
+bool Sphere::Intersect(const Ray &r, float *tHit, SurfaceInteraction *isect) const{
     Ray ray = (*WorldToObject)(r);
     float a = ray.d.x * ray.d.x + ray.d.y * ray.d.y + ray.d.z * ray.d.z;
     float b = 2 * (ray.d.x * ray.o.x + ray.d.y * ray.o.y + ray.d.z * ray.o.z);
@@ -22,7 +22,7 @@ bool Sphere::Intersect(const Ray &r, float *tHit, SurfaceInteraction *isect){
 
     Point3f pHit = ray(tTemp);
     *tHit = tTemp;
-    *isect = (*ObjectToWorld)(SurfaceInteraction(pHit, -ray.d, (Normal3f)pHit));
+    // *isect = (*ObjectToWorld)(SurfaceInteraction(pHit, -ray.d, (Normal3f)pHit));
     return true;
 
 }
