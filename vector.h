@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cassert>
 
+template <typename T>
+class Normal3;
 
 template <typename T> 
 class Vector3{
@@ -12,6 +14,7 @@ class Vector3{
     T x, y, z;
 
     // public methods
+    explicit Vector3(const Normal3<T> &n);
 
     bool HasNaNs() {
         return std::isnan(x) || std::isnan(y) || std::isnan(z);
@@ -102,10 +105,12 @@ class Vector3{
     }
 
     float Norm() const{
-        std::sqrt(NormSquared());
+        return std::sqrt(NormSquared());
     }
 
 };
+
+
 
 template <typename T>
 inline Vector3<T> operator*(T s,const Vector3<T> &v) {

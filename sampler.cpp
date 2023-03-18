@@ -3,10 +3,11 @@
 #include <iostream>
 
 
+
 Point2f PixelSampler::Get2D(){
     if(sampleOffset > samples.size()){
-        std::cout << "bro fix ur sampling" << std::endl;
         sampleOffset++;
+        std::cout << "fix ur sampling bro cuz " << sampleOffset << " > " << samples.size() << std::endl;
         return Point2f(random_float(), random_float());
     }else{
         sampleOffset++;
@@ -15,8 +16,17 @@ Point2f PixelSampler::Get2D(){
     }
 }
 
+StratifiedSampler::StratifiedSampler(int samplesPerPixel) : 
+    PixelSampler(samplesPerPixel), samplesPerEdge{(int)sqrt(samplesPerPixel)}
+    {
+    std::cout << samplesPerEdge << std::endl;
+    samplesPerPixel = samplesPerEdge * samplesPerEdge;
+}
+
 void StratifiedSampler::StartPixel(){
     samples.clear();
+    sampleOffset = 0;
+    // std::cout << samplesPerPixels << " vs " << samplesPerEdge << std::endl;
     float d = (float)1 / samplesPerEdge;
     for(int y = 0; y < samplesPerEdge; ++y){
         for(int x = 0; x < samplesPerEdge; ++x){

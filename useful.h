@@ -5,8 +5,11 @@
 #include <string>
 #include <cmath>
 #include <random>
+#include "point.h"
+
 
 static const float OneMinusEpsilon = 0x1.fffffep-1;
+static const float Pi = 3.1415926;
 
 inline void Error(std::string s){
     throw std::runtime_error(s);
@@ -31,6 +34,21 @@ inline float random_float() {
     static std::mt19937 generator;
     return distribution(generator);
 }
+
+inline Vector3f randomInSphere(){
+    while(true){
+        Vector3f v = Vector3f(random_float(), random_float(), random_float());
+        if(v.NormSquared() >= 1) continue;
+        return v;
+    }
+}
+
+inline float clamp(float x, float min, float max){
+    if (x < min) return min;
+    if (x > max) return max;
+    return x;
+}
+
 
 
 

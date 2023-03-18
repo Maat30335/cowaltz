@@ -22,7 +22,7 @@ bool Sphere::Intersect(const Ray &r, float *tHit, SurfaceInteraction *isect) con
 
     Point3f pHit = ray(tTemp);
     *tHit = tTemp;
-    // *isect = (*ObjectToWorld)(SurfaceInteraction(pHit, -ray.d, (Normal3f)pHit));
+    *isect = (*ObjectToWorld)(SurfaceInteraction(pHit, -ray.d, (Normal3f)pHit));
     return true;
 
 }

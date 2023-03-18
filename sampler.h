@@ -7,21 +7,22 @@
 class PixelSampler {
 
     public:
-    PixelSampler(int samplesPerPixels = 1) : samplesPerPixels{samplesPerPixels} {};
+    PixelSampler(int samplesPerPixel = 1) : samplesPerPixel{samplesPerPixel} {};
     Point2f Get2D();
     void virtual StartPixel() = 0;
     virtual ~PixelSampler() {};
+    int samplesPerPixel;
 
     protected:
     std::vector<Point2f> samples;
     int sampleOffset;
-    int samplesPerPixels;
+    
 
 };
 
 class StratifiedSampler : public PixelSampler {
-    public:
-    StratifiedSampler(int samplesPerPixels = 1) : PixelSampler(samplesPerPixels), samplesPerEdge{(int)sqrt(samplesPerPixels)} {};
+    public: // uhh this is a bit evil, please only use perfect squares for now thanks
+    StratifiedSampler(int samplesPerPixel = 1);
     void virtual StartPixel();
 
     private:

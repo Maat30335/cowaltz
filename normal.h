@@ -3,6 +3,8 @@
 
 #include <cmath>
 #include <cassert>
+#include "vector.h"
+
 
 template <typename T> 
 class Normal3{
@@ -12,7 +14,7 @@ class Normal3{
 
     // public methods
 
-    bool HasNaNs() {
+    bool HasNaNs() const{
         return std::isnan(x) || std::isnan(y) || std::isnan(z);
     }
 
@@ -101,10 +103,13 @@ class Normal3{
     }
 
     float Norm() const{
-        std::sqrt(NormSquared());
+        return std::sqrt(NormSquared());
     }
 
+
 };
+
+
 
 template <typename T>
 inline Normal3<T> operator*(T s,const Normal3<T> &v) {
@@ -162,6 +167,11 @@ inline Normal3<T> Normalize(const Normal3<T> &v){
 template<typename T>
 inline Normal3<T> FaceForward(const Normal3<T> &n, const Vector3<T> &v){
     return (Dot(n, v) < 0.f) ? -n : n;
+}
+
+template <typename T> 
+inline Vector3<T>::Vector3(const Normal3<T> &n) : x(n.x), y(n.y), z(n.z) {
+    assert(!n.HasNaNs());
 }
 
 typedef Normal3<float> Normal3f;

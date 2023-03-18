@@ -9,6 +9,7 @@
 
 struct SurfaceInteraction {
     // UV stuff with point2f
+    SurfaceInteraction() {};
     SurfaceInteraction(Point3f p, Vector3f wo, Normal3f n) : p{p}, wo{wo}, n{n} {};
     Point3f p;
     Vector3f wo;
