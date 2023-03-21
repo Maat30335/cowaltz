@@ -31,26 +31,26 @@ Color Color::operator+(const Color &v) const{
         return r != v.r || g != v.g || b != v.b;
     }
 
-    Color Color::operator*(float s) const{
+    Color Color::operator*(double s) const{
         return Color(s * r, s * g, s * b);
     }
 
-    Color& Color::operator*=(float s){
+    Color& Color::operator*=(double s){
         r *= s;
         g *= s;
         b *= s;
         return *this;
     }
 
-    Color Color::operator/(float f) const{
+    Color Color::operator/(double f) const{
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         return Color(inv * r, inv * g, inv * b);
     }
 
-    Color& Color::operator/=(float f){
+    Color& Color::operator/=(double f){
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         r *= inv;
         g *= inv;
         b *= inv;

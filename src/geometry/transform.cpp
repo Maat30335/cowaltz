@@ -1,6 +1,6 @@
 #include "transform.h"
 
-Transform::Transform(const float mat[4][4]){
+Transform::Transform(const double mat[4][4]){
     m = Matrix4x4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
                   mat[1][0], mat[1][1], mat[1][2], mat[1][3],
                   mat[2][0], mat[2][1], mat[2][2], mat[2][3],
@@ -37,12 +37,12 @@ Transform Translate(const Vector3f &delta){
                 0, 0, 0,       1);
     return Transform(m, mInv);
 }
-Transform Scale(float s){
+Transform Scale(double s){
     Matrix4x4 m(s, 0, 0, 0,
                 0, s, 0, 0,
                 0, 0, s, 0,
                 0, 0, 0, 1);
-    float sInv = 1 / s;
+    double sInv = 1 / s;
     Matrix4x4 mInv(sInv,   0,   0, 0,
                    0,   sInv,   0, 0,
                    0,     0, sInv, 0,
@@ -50,7 +50,7 @@ Transform Scale(float s){
     return Transform(m, mInv);
 }
 
-Transform Scale(float x, float y, float z){
+Transform Scale(double x, double y, double z){
     Matrix4x4 m(x, 0, 0, 0,
                 0, y, 0, 0,
                 0, 0, z, 0,

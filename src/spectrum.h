@@ -6,22 +6,22 @@
 
 class Color {
     public:
-    Color(float r, float g, float b) : r{r}, g{g}, b{b} {};
-    float r, g, b;
+    Color(double r, double g, double b) : r{r}, g{g}, b{b} {};
+    double r, g, b;
     Color operator+(const Color &v) const;
     Color& operator+=(const Color &v);
     Color operator-(const Color &v) const;
     Color& operator-=(const Color &v);
     bool operator==(const Color &v) const;
     bool operator!=(const Color &v) const;
-    Color operator*(float s) const;
-    Color& operator*=(float s);
-    Color operator/(float f) const;
-    Color& operator/=(float f);
+    Color operator*(double s) const;
+    Color& operator*=(double s);
+    Color operator/(double f) const;
+    Color& operator/=(double f);
 
 };
 
-inline Color operator*(float s,const Color &v) {
+inline Color operator*(double s,const Color &v) {
     return v * s;
 }
 

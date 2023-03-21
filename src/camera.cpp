@@ -1,11 +1,11 @@
 #include "camera.h"
 #include <iostream>
 
-PerspectiveCamera::PerspectiveCamera(const Transform *CameraToWorld, const Point2i &resolution, float fov) : 
+PerspectiveCamera::PerspectiveCamera(const Transform *CameraToWorld, const Point2i &resolution, double fov) : 
     Camera{CameraToWorld, resolution}, fov{fov}
     {
-    lowerLeft.x = 0.f - (float)resolution.x / 2;
-    lowerLeft.y = 0.f - (float)resolution.y / 2;
+    lowerLeft.x = 0 - (double)resolution.x / 2;
+    lowerLeft.y = 0 - (double)resolution.y / 2;
 }
 
 Ray PerspectiveCamera::GenerateRay(const Point2f &sample, const Point2i &pixel) const{ // we need to change this to base it off pixel AND sample thanks

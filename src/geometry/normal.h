@@ -81,13 +81,13 @@ class Normal3{
 
     Normal3<T> operator/(T f) const{
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         return Normal3(inv * x, inv * y, inv * z);
     }
 
     Normal3<T>& operator/=(T f){
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         x *= inv;
         y *= inv;
         z *= inv;
@@ -98,11 +98,11 @@ class Normal3{
         return Normal3(-x, -y, -z);
     }
 
-    float NormSquared() const{
+    double NormSquared() const{
         return x * x + y * y + z * z;
     }
 
-    float Norm() const{
+    double Norm() const{
         return std::sqrt(NormSquared());
     }
 
@@ -166,7 +166,7 @@ inline Normal3<T> Normalize(const Normal3<T> &v){
 
 template<typename T>
 inline Normal3<T> FaceForward(const Normal3<T> &n, const Vector3<T> &v){
-    return (Dot(n, v) < 0.f) ? -n : n;
+    return (Dot(n, v) < 0) ? -n : n;
 }
 
 template <typename T> 
@@ -174,7 +174,7 @@ inline Vector3<T>::Vector3(const Normal3<T> &n) : x(n.x), y(n.y), z(n.z) {
     assert(!n.HasNaNs());
 }
 
-typedef Normal3<float> Normal3f;
+typedef Normal3<double> Normal3f;
 typedef Normal3<int> Normal3i;
 
 #endif

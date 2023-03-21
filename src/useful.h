@@ -8,14 +8,14 @@
 #include "point.h"
 
 
-static const float OneMinusEpsilon = 0x1.fffffep-1;
-static const float Pi = 3.1415926;
+static const double OneMinusEpsilon = 0x1.fffffep-1;
+static const double Pi = 3.1415926;
 
 inline void Error(std::string s){
     throw std::runtime_error(s);
 }
 
-inline bool Quadratic(float a, float b, float c, float *t0, float *t1){
+inline bool Quadratic(double a, double b, double c, double *t0, double *t1){
     double discrim = (double)b * (double)b - 4 * (double)a * (double)c;
     if (discrim < 0) return false;
     double rootDiscrim = std::sqrt(discrim);
@@ -29,21 +29,21 @@ inline bool Quadratic(float a, float b, float c, float *t0, float *t1){
     return true;
 }
 
-inline float random_float() {
-    static std::uniform_real_distribution<float> distribution(0.0, 1.0);
+inline double random_double() {
+    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
     static std::mt19937 generator;
     return distribution(generator);
 }
 
 inline Vector3f randomInSphere(){
     while(true){
-        Vector3f v = Vector3f(random_float(), random_float(), random_float());
+        Vector3f v = Vector3f(random_double(), random_double(), random_double());
         if(v.NormSquared() >= 1) continue;
         return v;
     }
 }
 
-inline float clamp(float x, float min, float max){
+inline double clamp(double x, double min, double max){
     if (x < min) return min;
     if (x > max) return max;
     return x;

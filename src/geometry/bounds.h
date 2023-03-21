@@ -10,7 +10,7 @@ class Bounds3{
 
 };
 
-typedef Bounds3<float> Bounds3f;
+typedef Bounds3<double> Bounds3f;
 typedef Bounds3<int>   Bounds3i;
 
 #endif

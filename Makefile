@@ -1,5 +1,6 @@
+VPATH=src:src/geometry
 CXX=g++
-CXXFLAGS=-std=c++14 -MMD -Werror=vla
+CXXFLAGS=-std=c++14 -Isrc -Isrc/geometry -MMD -Werror=vla
 OBJECTS=main.o camera.o film.o matrix.o sphere.o transform.o primitive.o integrator.o sampler.o spectrum.o
 DEPENDS=${OBJECTS:.o=.d}
 EXEC=main

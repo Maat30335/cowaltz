@@ -11,7 +11,7 @@ void SamplerIntegrator::Render(const Primitive &scene){
     film->FirstLine(camera->resolution, file);
     int imageHeight = camera->resolution.y;
     int imageWidth = camera->resolution.x;
-    float scale = (float)1 / sampler->samplesPerPixel;
+    double scale = (double)1 / sampler->samplesPerPixel;
     for (int j = imageHeight-1; j >= 0; --j) {
         for (int i = 0; i < imageWidth; ++i) {
             sampler->StartPixel();
@@ -45,7 +45,7 @@ Color LambertIntegrator::rayColor(const Ray &r, const Primitive &scene, int dept
     }
     SurfaceInteraction isect;
     if(scene.Intersect(r, &isect)){
-                Point2f p{random_float(), random_float()};
+                Point2f p{random_double(), random_double()};
                 isect.n = Normalize(isect.n);
                 Vector3f d = (Vector3f)isect.n + Normalize(randomInSphere());
                 return 0.5 * rayColor(Ray(isect.p, d), scene, depth - 1);

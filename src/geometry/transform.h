@@ -12,7 +12,7 @@ private:
     Matrix4x4 m, mInv;
 public:
     Transform() {};
-    Transform(const float mat[4][4]);
+    Transform(const double mat[4][4]);
     Transform(const Matrix4x4 &m) : m{m}, mInv{Inv(m)} {};
     Transform(const Matrix4x4 &m, const Matrix4x4 &mInv) : m{m}, mInv{mInv} {};
     bool operator==(const Transform &t) const;
@@ -49,7 +49,7 @@ public:
     inline Ray operator()(const Ray &r) const {
         Point3f o = (*this)(r.o);
         Vector3f d = (*this)(r.d);
-        float tMax = r.tMax; // not sure about this???
+        double tMax = r.tMax; // not sure about this???
         return Ray(o, d, tMax);
     }
 
@@ -64,8 +64,8 @@ public:
 };
 
 Transform Translate(const Vector3f &delta);
-Transform Scale(float s);
-Transform Scale(float x, float y, float z);
+Transform Scale(double s);
+Transform Scale(double x, double y, double z);
 
 
 

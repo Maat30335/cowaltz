@@ -73,13 +73,13 @@ class Point3{
 
     Point3<T> operator/(T f) const{
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         return Point3<T>(inv * x, inv * y, inv * z);
     }
 
     Point3<T>& operator/=(T f){
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         x *= inv;
         y *= inv;
         z *= inv;
@@ -120,21 +120,21 @@ class Point3{
 };
 
 template<typename T>
-inline float Distance(const Point3<T> &p1, const Point3<T> &p2){
+inline double Distance(const Point3<T> &p1, const Point3<T> &p2){
     return (p1 - p2).Norm();
 }
 
 template<typename T>
-inline float DistanceSquared(const Point3<T> &p1, const Point3<T> &p2){
+inline double DistanceSquared(const Point3<T> &p1, const Point3<T> &p2){
     return (p1 - p2).NormSquared();
 }
 
 template<typename T>
-Point3<T> Lerp(float t, const Point3<T> &p1, const Point3<T> &p2){
+Point3<T> Lerp(double t, const Point3<T> &p1, const Point3<T> &p2){
     return (1 - t) * p1 + t * p2;
 }
 
-typedef Point3<float> Point3f;
+typedef Point3<double> Point3f;
 typedef Point3<int>   Point3i;
 
 
@@ -191,13 +191,13 @@ class Point2{
 
     Point2<T> operator/(T f) const{
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         return Point2(inv * x, inv * y);
     }
 
     Point2<T>& operator/=(T f){
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         x *= inv;
         y *= inv;
         return *this;
@@ -208,7 +208,7 @@ class Point2{
     }
 };
 
-typedef Point2<float> Point2f;
+typedef Point2<double> Point2f;
 typedef Point2<int>   Point2i;
 
 

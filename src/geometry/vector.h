@@ -83,13 +83,13 @@ class Vector3{
 
     Vector3<T> operator/(T f) const{
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         return Vector3(inv * x, inv * y, inv * z);
     }
 
     Vector3<T>& operator/=(T f){
         assert(f != 0);
-        float inv = (float) 1 / f;
+        double inv = (double) 1 / f;
         x *= inv;
         y *= inv;
         z *= inv;
@@ -100,11 +100,11 @@ class Vector3{
         return Vector3(-x, -y, -z);
     }
 
-    float NormSquared() const{
+    double NormSquared() const{
         return x * x + y * y + z * z;
     }
 
-    float Norm() const{
+    double Norm() const{
         return std::sqrt(NormSquared());
     }
 
@@ -155,7 +155,7 @@ CoordinateSystem(const Vector3<T> &v1, Vector3<T> *v2, Vector3<T> *v3) {
     *v3 = Cross(v1, *v2);
 }
 
-typedef Vector3<float> Vector3f;
+typedef Vector3<double> Vector3f;
 typedef Vector3<int> Vector3i;
 
 #endif
