@@ -34,4 +34,11 @@ class LambertIntegrator : public SamplerIntegrator {
     virtual Color rayColor(const Ray &r, const Primitive &scene, int depth = 1) const;
 };
 
+class NormalIntegrator : public SamplerIntegrator {
+    public:
+    NormalIntegrator(std::shared_ptr<Film> film, std::shared_ptr<Camera> camera, std::shared_ptr<PixelSampler> sampler) : SamplerIntegrator(film, camera, sampler) {};
+    virtual Color rayColor(const Ray &r, const Primitive &scene, int depth = 1) const;
+
+};
+
 #endif

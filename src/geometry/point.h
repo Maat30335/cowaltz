@@ -117,6 +117,20 @@ class Point3{
     Vector3<T> operator-(const Point3<T> &p) const{
         return Vector3<T>(x - p.x, y - p.y, z - p.z);
     }
+
+    T operator[](int i) const { 
+           assert(i >= 0 && i <= 2);
+           if (i == 0) return x;
+           if (i == 1) return y;
+           return z;
+    }
+       
+    T &operator[](int i) { 
+           assert(i >= 0 && i <= 2);
+           if (i == 0) return x;
+           if (i == 1) return y;
+           return z;
+    }
 };
 
 template<typename T>
@@ -206,7 +220,16 @@ class Point2{
     Point2<T> operator-() const{
         return Point2(-x, -y);
     }
+
+    Vector2<T> operator-(const Point2<T> &p) const{
+        return Vector2<T>(x - p.x, y - p.y);
+    }
 };
+
+template <typename T>
+inline Point2<T> operator*(T s,const Point2<T> &p) {
+    return p * s;
+}
 
 typedef Point2<double> Point2f;
 typedef Point2<int>   Point2i;

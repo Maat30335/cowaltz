@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "ray.h"
 #include "normal.h"
+#include "bounds.h"
 #include "interaction.h"
 
 class Transform{
@@ -41,9 +42,23 @@ public:
     template <typename T> inline Normal3<T>
     operator()(const Normal3<T> &n) const {
         T x = n.x, y = n.y, z = n.z;
-        return Normal3<T>(mInv.m[0][0]*x + mInv.m[1][0]*y + mInv.m[2][0]*z,
+        return Normalize(Normal3<T>(mInv.m[0][0]*x + mInv.m[1][0]*y + mInv.m[2][0]*z,
                         mInv.m[0][1]*x + mInv.m[1][1]*y + mInv.m[2][1]*z,
-                        mInv.m[0][2]*x + mInv.m[1][2]*y + mInv.m[2][2]*z);
+                        mInv.m[0][2]*x + mInv.m[1][2]*y + mInv.m[2][2]*z));
+    }
+
+    template <typename T> inline Bounds3<T>
+    operator()(const Bounds3<T> &A) const{
+        Bounds3f B = Bounds3f(Point3f(m.m[0][3], m.m[1][3], m.m[2][3]));
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                double a = m.m[i][j] * A.pMin[j];
+                double b = m.m[i][j] * A.pMax[j];
+                B.pMin[i] += a < b ? a : b;
+                B.pMax[i] += a < b ? b : a;
+            }
+        }
+        return B;
     }
 
     inline Ray operator()(const Ray &r) const {
@@ -54,10 +69,13 @@ public:
     }
 
     inline SurfaceInteraction operator()(const SurfaceInteraction &s) const{
+        Point2f uv = s.uv;
+        Vector3f dpdu = (*this)(s.dpdu);
+        Vector3f dpdv = (*this)(s.dpdv);
         Point3f p = (*this)(s.p);
         Vector3f wo = (*this)(s.wo);
         Normal3f n = (*this)(s.n);
-        return SurfaceInteraction(p, wo, n);
+        return SurfaceInteraction(p, uv, dpdu, dpdv, wo, n);
     }
     friend Transform Inv(const Transform &t);
 
@@ -66,7 +84,9 @@ public:
 Transform Translate(const Vector3f &delta);
 Transform Scale(double s);
 Transform Scale(double x, double y, double z);
-
+Transform RotateX(double theta);
+Transform RotateY(double theta);
+Transform RotateZ(double theta);
 
 
 

@@ -14,6 +14,10 @@ class Normal3{
 
     // public methods
 
+    explicit Normal3(const Vector3<T> &v) : x{v.x}, y{v.y}, z{v.z}{
+        assert(!HasNaNs());
+    }
+
     bool HasNaNs() const{
         return std::isnan(x) || std::isnan(y) || std::isnan(z);
     }

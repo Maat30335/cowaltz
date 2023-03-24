@@ -158,6 +158,109 @@ CoordinateSystem(const Vector3<T> &v1, Vector3<T> *v2, Vector3<T> *v3) {
 typedef Vector3<double> Vector3f;
 typedef Vector3<int> Vector3i;
 
+
+template <typename T> 
+class Vector2{
+    public:
+    // public data
+    T x, y;
+
+    bool HasNaNs() {
+        return std::isnan(x) || std::isnan(y);
+    }
+
+    Vector2() {x = y = 0;}
+
+    Vector2(T x, T y): x{x}, y{y} {
+        assert(!HasNaNs());
+    }
+
+    T operator[](int i) const{
+        assert(0 <= i && i <= 1);
+        if(i == 0) return x;
+        return y;
+    }
+
+    T &operator[](int i) {
+        assert(0 <= i && i <= 2);
+        if(i == 0) return x;
+        return y;
+    }
+
+    Vector2<T> operator+(const Vector2<T> &v) const{
+        return Vector2(x + v.x, y + v.y);
+    }
+
+    Vector2<T>& operator+=(const Vector2<T> &v){
+        x =+ v.x;
+        y =+ v.y;
+        return *this;
+    }
+
+    Vector2<T> operator-(const Vector2<T> &v) const{
+        return Vector2(x - v.x, y - v.y);
+    }
+        
+    Vector2<T>& operator-=(const Vector2<T> &v){
+        x =- v.x;
+        y =- v.y;
+        return *this;
+    }
+
+    bool operator==(const Vector2<T> &v) const{
+        return x == v.x && y == v.y;
+    }
+
+    bool operator!=(const Vector2<T> &v) const{
+        return x != v.x || y != v.y;
+    }
+
+    Vector2<T> operator*(T s) const{
+        return Vector2(s * x, s * y);
+    }
+
+    Vector2<T>& operator*=(T s){
+        x *= s;
+        y *= s;
+        return *this;
+    }
+
+    Vector2<T> operator/(T f) const{
+        assert(f != 0);
+        double inv = (double) 1 / f;
+        return Vector2(inv * x, inv * y);
+    }
+
+    Vector2<T>& operator/=(T f){
+        assert(f != 0);
+        double inv = (double) 1 / f;
+        x *= inv;
+        y *= inv;
+        return *this;
+    }
+
+    Vector2<T> operator-() const{
+        return Vector2(-x, -y);
+    }
+
+    double NormSquared() const{
+        return x * x + y * y;
+    }
+
+    double Norm() const{
+        return std::sqrt(NormSquared());
+    }
+
+};
+
+template <typename T>
+inline Vector2<T> operator*(T s,const Vector2<T> &v) {
+    return v * s;
+}
+
+typedef Vector2<double> Vector2f;
+typedef Vector2<int> Vector2i;
+
 #endif
 
 

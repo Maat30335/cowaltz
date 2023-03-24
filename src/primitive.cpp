@@ -2,6 +2,7 @@
 
 
 bool GeoPrimitive::Intersect(const Ray &r, SurfaceInteraction *isect) const{
+    // if(!shape->IntersectP(r)) return false;
     return shape->Intersect(r, &r.tMax, isect);
     // we will add bounds stuff one day
 }

@@ -1,4 +1,5 @@
 #include "transform.h"
+#include "useful.h"
 
 Transform::Transform(const double mat[4][4]){
     m = Matrix4x4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
@@ -60,4 +61,34 @@ Transform Scale(double x, double y, double z){
                    0,     0, 1/z, 0,
                    0,     0,   0, 1);
     return Transform(m, mInv);
+}
+
+Transform RotateX(double theta) {
+    double sinTheta = std::sin(Radians(theta));
+    double cosTheta = std::cos(Radians(theta));
+    Matrix4x4 m(1,        0,         0, 0, 
+                0, cosTheta, -sinTheta, 0,
+                0, sinTheta,  cosTheta, 0,
+                0,        0,         0, 1);
+    return Transform(m, Transpose(m));
+}
+
+Transform RotateY(double theta) {
+    double sinTheta = std::sin(Radians(theta));
+    double cosTheta = std::cos(Radians(theta));
+    Matrix4x4 m(cosTheta,           0,         sinTheta, 0, 
+                        0,         1, 0, 0,
+                -sinTheta,  0,  cosTheta, 0,
+                        0,        0,         0, 1);
+    return Transform(m, Transpose(m));
+}
+
+Transform RotateZ(double theta) {
+    double sinTheta = std::sin(Radians(theta));
+    double cosTheta = std::cos(Radians(theta));
+    Matrix4x4 m(cosTheta, -sinTheta,    0, 0, 
+                sinTheta,  cosTheta, 0, 0,
+                0, 0,1, 0,
+                0,        0,         0, 1);
+    return Transform(m, Transpose(m));
 }
