@@ -5,6 +5,8 @@
 #include "normal.h"
 #include "point.h"
 
+class BxDF;
+
 
 
 struct SurfaceInteraction {
@@ -17,6 +19,7 @@ struct SurfaceInteraction {
     Vector3f dpdv;
     Vector3f wo;
     Normal3f n; // note, this is not always normalized, it should be before shading occurs
+    BxDF *bsdf;
 
 };
 

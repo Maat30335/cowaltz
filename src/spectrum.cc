@@ -35,6 +35,10 @@ Color Color::operator+(const Color &v) const{
         return Color(s * r, s * g, s * b);
     }
 
+    Color Color::operator*(const Color &v) const{
+        return Color(r * v.r, g * v.g, b * v.b);
+    }
+
     Color& Color::operator*=(double s){
         r *= s;
         g *= s;

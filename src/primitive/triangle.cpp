@@ -134,7 +134,7 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
     Point2f uv[3];
     GetUVs(uv);
 
-    Point2f uvHit = u * uv[0] + v * uv[1] + w * uv[2];
+    Point2f uvHit = w * uv[0] + u * uv[1] + v * uv[2];
 
     Vector2f duv02 = uv[0] - uv[2], duv12 = uv[1] - uv[2];
     Vector3f dp02 = -v0v2, dp12 = p1 - p2;
@@ -152,7 +152,7 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
     Normal3f nHit;
 
     if(mesh->n){
-        nHit = Normalize(u * mesh->n[nv[0]] + v * mesh->n[nv[1]] + w * mesh->n[nv[2]]);
+        nHit = Normalize(w * mesh->n[nv[0]] + u * mesh->n[nv[1]] + v * mesh->n[nv[2]]);
         dpdu = Normalize(dpdu - (Dot(dpdu, nHit)) * (Vector3f)nHit);
         dpdv = Normalize(dpdv - (Dot(dpdv, nHit)) * (Vector3f)nHit);
 

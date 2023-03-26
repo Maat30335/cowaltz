@@ -54,6 +54,17 @@ inline double Radians(double theta){
     return theta * Pi / 180;
 }
 
+inline double pow(double base, int exponent){
+    assert(exponent > -1);
+    double result = 1;
+
+    for(int i = 0; i < exponent; i++){
+        result *= base;
+    }
+
+    return result;
+}
+
 
 
 

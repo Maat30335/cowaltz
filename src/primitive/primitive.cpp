@@ -2,9 +2,12 @@
 
 
 bool GeoPrimitive::Intersect(const Ray &r, SurfaceInteraction *isect) const{
-    // if(!shape->IntersectP(r)) return false;
-    return shape->Intersect(r, &r.tMax, isect);
-    // we will add bounds stuff one day
+    if(!shape->WorldBounds().IntersectP(r, nullptr, nullptr)) return false;
+    if(shape->Intersect(r, &r.tMax, isect)){
+        material->UpdateBSDF(isect);
+        return true;
+    }
+    return false;
 }
 
 bool PrimitiveList::Intersect(const Ray &r, SurfaceInteraction *isect) const{

@@ -5,6 +5,7 @@
 #include <vector>
 #include "interaction.h"
 #include "shape.h"
+#include "material.h"
 
 class Primitive {
     public:
@@ -15,10 +16,11 @@ class Primitive {
 class GeoPrimitive : public Primitive {
     // bounds stuff
     public:
-    GeoPrimitive(std::shared_ptr<Shape> shape) : shape{shape} {};
+    GeoPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material) : shape{shape}, material{material} {};
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const;
     private:
     std::shared_ptr<Shape> shape;
+    std::shared_ptr<Material> material;
     // material would also be here
 };
 

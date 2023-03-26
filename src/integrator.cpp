@@ -5,6 +5,8 @@
 #include "useful.h"
 #include "point.h"
 #include "vector.h"
+#include "disney.h"
+
 
 void SamplerIntegrator::Render(const Primitive &scene){
     std::ofstream file("test.ppm");
@@ -48,8 +50,10 @@ Color LambertIntegrator::rayColor(const Ray &r, const Primitive &scene, int dept
     }
     SurfaceInteraction isect;
     if(scene.Intersect(r, &isect)){
-                Vector3f d = (Vector3f)isect.n + Normalize(randomInSphere());
-                return 0.5 * rayColor(Ray(isect.p, d), scene, depth - 1);
+                Vector3f wi = Normalize((Vector3f)isect.n + Normalize(randomInSphere()));
+                Vector3f wo = Normalize(r.d);
+
+                return isect.bsdf->f(wi, wo, isect) * rayColor(Ray(isect.p, wi), scene, depth - 1);
             }else{
 
                 Vector3f unit_direction = Normalize(r.d);
