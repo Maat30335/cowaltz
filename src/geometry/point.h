@@ -133,6 +133,11 @@ class Point3{
     }
 };
 
+template <typename T>
+inline Point3<T> operator*(T s,const Point3<T> &v) {
+    return v * s;
+}
+
 template<typename T>
 inline double Distance(const Point3<T> &p1, const Point3<T> &p2){
     return (p1 - p2).Norm();

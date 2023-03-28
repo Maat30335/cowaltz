@@ -27,6 +27,21 @@ class Bounds3{
     
     Point3<T> pMin, pMax;
 
+    int MaximumExtent(){
+        Vector3f d{pMax.x - pMin.x, pMax.y - pMin.y, pMax.z - pMin.z};
+        if (d.x > d.y && d.x > d.z)
+            return 0;
+        else if (d.y > d.z)
+            return 1;
+        else
+            return 2;
+    }
+
+    double SurfaceArea() const{
+        Vector3f d{pMax - pMin};
+        return 2 * (d.x * d.y + d.x * d.z + d.y * d.z);
+    }
+
 
     inline bool IntersectP(const Ray &r, double *hitt0, double *hitt1) const{
         double t0 = 0, t1 = r.tMax;
@@ -43,6 +58,7 @@ class Bounds3{
         if (hitt1) *hitt1 = t1;
         return true;
     }
+
 
 
 
@@ -69,6 +85,8 @@ return Bounds3<T>(Point3<T>(std::min(b.pMin.x, p.x),
                                 std::max(b.pMax.y, p.y),
                                 std::max(b.pMax.z, p.z)));
 }
+
+
 
 typedef Bounds3<double> Bounds3f;
 typedef Bounds3<int>   Bounds3i;

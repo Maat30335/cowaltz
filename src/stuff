@@ -1,30 +1,8 @@
- std::string inputfile = "stuff/dodecahedronWithNormals.obj";
-    tinyobj::ObjReaderConfig reader_config;
-    reader_config.mtl_search_path = "./"; // Path to material files
-
-    tinyobj::ObjReader reader;
-
-    if (!reader.ParseFromFile(inputfile, reader_config)) {
-    if (!reader.Error().empty()) {
-        std::cerr << "TinyObjReader: " << reader.Error();
-    }
-    exit(1);
-    }
-
-    if (!reader.Warning().empty()) {
-    std::cout << "TinyObjReader: " << reader.Warning();
-    }
-
-    auto& attrib = reader.GetAttrib();
-    auto& shapes = reader.GetShapes();
-    auto& materials = reader.GetMaterials();
+    
+std::string inputfile = "stuff/dodecahedronWithNormals.obj";
+    
 
     
-    int nVertices = attrib.vertices.size() / 3;
-    int nTriangles = shapes[0].mesh.num_face_vertices.size();
-
-    std::cout << "loading: " << nVertices << " vertices" << std::endl;
-    std::cout << "loading: " << nTriangles << " triangles" << std::endl;
 
     std::unique_ptr<Point3f[]> verts(new Point3f[nVertices]);
     std::unique_ptr<Normal3f[]> normals(new Normal3f[nVertices]);

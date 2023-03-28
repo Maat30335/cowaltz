@@ -9,6 +9,7 @@ class Color {
     Color(double r, double g, double b) : r{r}, g{g}, b{b} {};
     double r, g, b;
     Color operator+(const Color &v) const;
+    Color operator+(double d) const;
     Color& operator+=(const Color &v);
     Color operator-(const Color &v) const;
     Color& operator-=(const Color &v);

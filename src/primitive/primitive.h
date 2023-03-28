@@ -10,6 +10,7 @@
 class Primitive {
     public:
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const = 0;
+    virtual Bounds3f WorldBounds() const = 0;
     virtual ~Primitive() {};
 };
 
@@ -18,6 +19,7 @@ class GeoPrimitive : public Primitive {
     public:
     GeoPrimitive(std::shared_ptr<Shape> shape, std::shared_ptr<Material> material) : shape{shape}, material{material} {};
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const;
+    virtual Bounds3f WorldBounds() const;
     private:
     std::shared_ptr<Shape> shape;
     std::shared_ptr<Material> material;
@@ -29,7 +31,9 @@ class PrimitiveList : public Primitive {
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const;
     virtual void addPrim(std::shared_ptr<Primitive> primitive);
     virtual void clearPrims();
+    virtual Bounds3f WorldBounds() const;
     private:
+    Bounds3f bounds;
     std::vector<std::shared_ptr<Primitive>> primitiveList;
 };
 

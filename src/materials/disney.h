@@ -20,6 +20,10 @@ class DisneyBSDF : public BxDF {
 
     private:
     Color EvaluateDiffuse(const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n) const;
+    Color EvaluateSpecularBRDF(const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n) const;
+    double GTR2(const Vector3f &wh, const Normal3f &n) const;
+    double GeoMasking(const Vector3f &wi, const Vector3f &wo, const Normal3f &n) const;
+    double Fresnel(const Vector3f &wh, const Vector3f &wo) const;
     
 };
 

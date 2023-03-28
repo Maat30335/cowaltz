@@ -42,10 +42,6 @@ Triangle::Triangle(const Transform *ObjectToWorld, const Transform *WorldToObjec
                     const std::shared_ptr<TriangleMesh> &mesh, int meshNum) : 
                     Shape(ObjectToWorld, WorldToObject), mesh(mesh){
                         nv = &mesh->vertexIndices[3 * meshNum];
-                        std::cout << nv[0] << " : [" << mesh->p[nv[0]].x << ", " << mesh->p[nv[0]].y << ", " << mesh->p[nv[0]].z << "]" << std::endl;
-                        std::cout << nv[1] << " : [" << mesh->p[nv[1]].x << ", " << mesh->p[nv[1]].y << ", " << mesh->p[nv[1]].z << "]" << std::endl;
-                        std::cout << nv[2] << " : [" << mesh->p[nv[2]].x << ", " << mesh->p[nv[2]].y << ", " << mesh->p[nv[2]].z << "]" << std::endl;
-
                     }
 
 Bounds3f Triangle::ObjectBounds() const{
@@ -77,35 +73,6 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
     Vector3f v0v2 = p2 - p0;
     Vector3f pvec = Cross(r.d, v0v2);
     double det = Dot(v0v1, pvec);
-
-    /*
-
-    // one day i will look at this and try to figure out what went wrong
-    int detSign = 1;
-    if(det < 0) detSign = -1;
-
-    if(std::abs(det) < Epsilon) return false;
-
-    
-    Vector3f tvec = r.o - p0;
-    double u = Dot(tvec, pvec);
-    if (u * detSign < 0 || u > det) return false;
-
-    Vector3f qvec = Cross(tvec, v0v1);
-    double v = Dot(r.d, qvec);
-    if (v * detSign < 0 || u + v > det) return false;
-
-    double tTemp = Dot(v0v2, qvec);
-
-    if(tTemp * detSign <= 0 || tTemp > r.tMax * detSign) return false;
-    // we have an intersection!!!!
-    double invDet = 1 / det;
-    u *= invDet;
-    v *= invDet;
-    tTemp *= invDet;
-    *tHit = tTemp;
-
-    */
 
     if(std::abs(det) < Epsilon) return false;
 
@@ -159,7 +126,6 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
     }else{
 
         nHit = (Normal3f)Normalize((Cross(p0 - p2, p1 - p2)));
-        if(Dot(r.d, nHit) > 0) nHit = -nHit;
 
     }
 
