@@ -15,12 +15,15 @@ class Camera {
 
 class PerspectiveCamera : public Camera {
     public:
-    PerspectiveCamera(const Transform *CameraToWorld, const Point2i &resolution, double fov = 60); // we add fov later
+    PerspectiveCamera(const Transform *CameraToWorld, const Point2i &resolution, double fov, double focusPlane, double aperture); // we add fov later
     virtual Ray GenerateRay(const Point2f &sample, const Point2i &pixel) const;
     
     private:
     double fov;
+    double focusPlane;
+    double aperture;
     Point2f lowerLeft;
+    double increment;
 };
 
 

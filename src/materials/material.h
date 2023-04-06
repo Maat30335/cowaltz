@@ -2,22 +2,36 @@
 #define MATERIAL_H
 
 #include <memory>
-#include "bsdf.h"
-#include "disney.h"
+#include "point.h"
+#include "spectrum.h"
 
+struct PrincipledParameters {
+    PrincipledParameters() {};
+    
+    PrincipledParameters(Color baseColor, double roughness, double IOR, double metallic, double specTrans) : 
+                        baseColor{baseColor}, roughness{roughness}, IOR{IOR}, metallic{metallic}, specTrans{specTrans} {};
+    
+    Color baseColor;
+    double roughness;
+    double IOR;
+    double metallic;
+    double specTrans;
+};
 
 class Material {
     public:
-    virtual void UpdateBSDF(SurfaceInteraction *isect) = 0;
+    virtual PrincipledParameters getSurface(const Point2f &uv) const = 0;
+    virtual ~Material() {};
 };
 
-class PrincipledShader : public Material {
+class ConstantMaterial : public Material {
     public:
-    PrincipledShader(Color baseColor, double roughness, double IOR);
-    void UpdateBSDF(SurfaceInteraction *isect);
+    ConstantMaterial(PrincipledParameters surface) : surface{surface} {};
+    virtual PrincipledParameters getSurface(const Point2f &uv) const;
     private:
-    std::unique_ptr<DisneyBSDF> bsdf;
+    PrincipledParameters surface;
 };
+
 
 
 

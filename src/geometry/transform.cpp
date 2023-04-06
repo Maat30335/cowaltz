@@ -92,3 +92,44 @@ Transform RotateZ(double theta) {
                 0,        0,         0, 1);
     return Transform(m, Transpose(m));
 }
+
+Transform ToSpace(const Vector3f &v){
+    Vector3f t1, t2;
+    CoordinateSystem(v, &t1, &t2);
+    Matrix4x4 mInv(t1.x, v.x, t2.x, 0,
+                t1.y, v.y, t2.y, 0,
+                t1.z, v.z, t2.z, 0,
+                0, 0, 0, 1);
+    Matrix4x4 m(t1.x, t1.y, t1.z, 0,
+                v.x, v.y, v.z, 0,
+                t2.x, t2.y, t2.z, 0,
+                0, 0, 0, 1);
+    return Transform(m, mInv);
+}
+
+Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
+    Matrix4x4 cameraToWorld;
+    cameraToWorld.m[0][3] = pos.x;
+    cameraToWorld.m[1][3] = pos.y;
+    cameraToWorld.m[2][3] = pos.z;
+    cameraToWorld.m[3][3] = 1;
+
+    Vector3f dir = Normalize(look - pos);
+        //ah yes the left handed system
+       Vector3f right = -Normalize(Cross(Normalize(up), dir));
+       Vector3f newUp = -Cross(dir, right);
+       cameraToWorld.m[0][0] = right.x;
+       cameraToWorld.m[1][0] = right.y;
+       cameraToWorld.m[2][0] = right.z;
+       cameraToWorld.m[3][0] = 0.;
+       cameraToWorld.m[0][1] = newUp.x;
+       cameraToWorld.m[1][1] = newUp.y;
+       cameraToWorld.m[2][1] = newUp.z;
+       cameraToWorld.m[3][1] = 0.;
+       cameraToWorld.m[0][2] = dir.x;
+       cameraToWorld.m[1][2] = dir.y;
+       cameraToWorld.m[2][2] = dir.z;
+       cameraToWorld.m[3][2] = 0.;
+
+       return Transform(Inv(cameraToWorld), cameraToWorld);
+}

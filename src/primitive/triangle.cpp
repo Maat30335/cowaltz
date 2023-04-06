@@ -126,6 +126,8 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
     }else{
 
         nHit = (Normal3f)Normalize((Cross(p0 - p2, p1 - p2)));
+        // if we don't have normals, dont assume we have good partial derivatives (for now)
+        CoordinateSystem((Vector3f)nHit, &dpdu, &dpdv);
 
     }
 

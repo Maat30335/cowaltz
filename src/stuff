@@ -1,92 +1,17 @@
-    
-std::string inputfile = "stuff/dodecahedronWithNormals.obj";
-    
+bool transmit(const Vector3f &v, const Vector3f &wh, double relativeIOR, Vector3f &wi){
+    double cosThetaI = Dot(v, wh);
+    double sin2ThetaI = std::max(0., (1 - cosThetaI * cosThetaI));
+    double sin2ThetaT = relativeIOR * relativeIOR * sin2ThetaI;
+    if(sin2ThetaT > 1) return false;
+    double cosThetaT = std::sqrt(1 - sin2ThetaT);
+    wi = relativeIOR * -v + (relativeIOR * cosThetaI - cosThetaT) * wh;
+    return true;
+}
 
-    
-
-    std::unique_ptr<Point3f[]> verts(new Point3f[nVertices]);
-    std::unique_ptr<Normal3f[]> normals(new Normal3f[nVertices]);
-    std::unique_ptr<Point2f[]> uvs(new Point2f[nVertices]);
-    std::unique_ptr<int[]> vertexIndices(new int[nTriangles * 3]);
-
-    for(int i = 0; i < nVertices; i++){
-        verts[i] = Point3f(attrib.vertices[i * 3 + 0], attrib.vertices[i * 3 + 1], attrib.vertices[i * 3 + 2]);
-        std::cout << i << " : [" << attrib.vertices[i * 3 + 0] << ", " << attrib.vertices[i * 3 + 1] << ", " << attrib.vertices[i * 3 + 2] << "]" << std::endl;
-    }
-
-    std::cout << std::endl << std::endl;
-
-    for(int i = 0; i < nTriangles; i++){
-        vertexIndices[i*3] = shapes[0].mesh.indices[i*3].vertex_index;
-        vertexIndices[i*3 + 1] = shapes[0].mesh.indices[i*3 + 1].vertex_index;
-        vertexIndices[i*3 + 2] = shapes[0].mesh.indices[i*3 + 2].vertex_index;
-
-        
-
-        normals[vertexIndices[i*3]] = Normal3f(attrib.normals[shapes[0].mesh.indices[i*3].normal_index + 0],
-                                                attrib.normals[shapes[0].mesh.indices[i*3].normal_index + 1],
-                                                attrib.normals[shapes[0].mesh.indices[i*3].normal_index + 2]);
-
-        normals[vertexIndices[i*3 + 1]] = Normal3f(attrib.normals[shapes[0].mesh.indices[i*3 + 1].normal_index + 0],
-                                                attrib.normals[shapes[0].mesh.indices[i*3 + 1].normal_index + 1],
-                                                attrib.normals[shapes[0].mesh.indices[i*3 + 1].normal_index + 2]);
-
-        normals[vertexIndices[i*3 + 2]] = Normal3f(attrib.normals[shapes[0].mesh.indices[i*3 + 2].normal_index + 0],
-                                                attrib.normals[shapes[0].mesh.indices[i*3 + 2].normal_index + 1],
-                                                attrib.normals[shapes[0].mesh.indices[i*3 + 2].normal_index + 2]);
-
-        
-
-        uvs[vertexIndices[i*3]] = Point2f(attrib.texcoords[shapes[0].mesh.indices[i*3].texcoord_index + 0],
-                                                attrib.normals[shapes[0].mesh.indices[i*3].texcoord_index + 1]);
-
-        uvs[vertexIndices[i*3 + 1]] = Point2f(attrib.texcoords[shapes[0].mesh.indices[i*3 + 1].texcoord_index + 0],
-                                                attrib.normals[shapes[0].mesh.indices[i*3 + 1].texcoord_index + 1]);
-
-        uvs[vertexIndices[i*3 + 2]] = Point2f(attrib.texcoords[shapes[0].mesh.indices[i*3 + 2].texcoord_index + 0],
-                                                attrib.normals[shapes[0].mesh.indices[i*3 + 2].texcoord_index + 1]);
-
-
-        
-
-        std::cout << i << " : vertex indices : " << std::endl;
-        std::cout << vertexIndices[i*3 + 0] << std::endl;
-        std::cout << vertexIndices[i*3 + 1] << std::endl;
-        std::cout << vertexIndices[i*3 + 2] << std::endl;
-        std::cout << i << " : normal indices : " << std::endl;
-        std::cout << shapes[0].mesh.indices[i*3].normal_index + 0 << std::endl;
-        std::cout << shapes[0].mesh.indices[i*3].normal_index + 1 << std::endl;
-        std::cout << shapes[0].mesh.indices[i*3].normal_index + 2 << std::endl;
-
-
-    }
-
-    std::cout << std::endl << std::endl;
-
-
-    Transform SpherePos = Translate(Vector3f(0, 0, -3)) * RotateY(45);
-    Transform SpherePosInv = Inv(SpherePos);
-
-    /*
-    int nVertices = 3;
-    int nTriangles = 1;
-
-    std::unique_ptr<Point3f[]> verts(new Point3f[nVertices]);
-    std::unique_ptr<int[]> vertexIndices(new int[nVertices]);
-
-    verts[0] = Point3f(-1, 0, 0);
-    verts[1] = Point3f(1, 0, 0);
-    verts[2] = Point3f(0, 1, 0);
-    vertexIndices[0] = 0;
-    vertexIndices[1] = 1;
-    vertexIndices[2] = 2;
-
-    */
-
-    std::vector<std::shared_ptr<Shape>> triangles = CreateTriangleMesh(&SpherePos, &SpherePosInv, 
-            nTriangles, vertexIndices.get(), nVertices, verts.get(), nullptr, nullptr);
-
-    for(int i = 0; i < nTriangles; i++){
-        std::shared_ptr<Primitive> tri = std::make_shared<GeoPrimitive>(triangles[i]);
-        scene.addPrim(tri);
-    }
+bool transmit(const Vector3f &v, const Vector3f &wh, double relativeIOR, Vector3f &wi){
+    double dotVH = Dot(v, wh);
+    double sinTheta = relativeIOR * std::sqrt(1 - dotVH * dotVH);
+    if(sinTheta > 1) return false;
+    wi = relativeIOR * (-v) + (relativeIOR * dotVH - std::sqrt(1 - sinTheta * sinTheta)) * wh;
+    return true;
+}

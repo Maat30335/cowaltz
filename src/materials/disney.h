@@ -1,31 +1,36 @@
 #ifndef DISNEY_H
 #define DISNEY_H
 
-#include "bsdf.h"
 #include "spectrum.h"
 #include "interaction.h"
+#include "parameters.h"
+#include "material.h"
 
-struct PrincipledParameters {
-    Color baseColor;
-    double roughness;
-    double IOR;
+
+
+struct BSDFSample {
+    bool isBlack = false;
+    bool hitIn = false;
+    Color reflectance;
+    Vector3f wi;
 };
 
+namespace Disney {
+    Color EvaluateDiffuse(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n);
+    double GTR2(const PrincipledParameters &parameters, const Vector3f &wh, const Normal3f &n);
+    double G1(const Vector3f &w, const Vector3f &wh,const Normal3f &n, double alpha);
+    double SmithGGX(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n);
+    Color SchlickFresnel(const PrincipledParameters &parameters, const Vector3f &wh, const Vector3f &wo, const Vector3f &wi);
+    Color EvaluateSpecBRDF(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n);
+    Color EvaluateSpecTransmission(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wt, const Normal3f &n);
+    void CalculateLobePDF(const PrincipledParameters &parameters, double &pSpecular, double &pDiffuse, double &pSpecTrans);
+    BSDFSample SampleSpecBRDF(const PrincipledParameters &parameters, const Vector3f &wo);
+    BSDFSample SampleDiffuse(const PrincipledParameters &parameters, const Vector3f &wo);
+    BSDFSample SampleSpecTrans(const PrincipledParameters &parameters, const Vector3f &wo);
+    BSDFSample SampleDisney(const SurfaceInteraction &isect, const Vector3f &v);
 
-class DisneyBSDF : public BxDF {
-    public:
-    DisneyBSDF(const Color &baseColor, double roughness, double IOR) : parameters{baseColor, roughness, IOR} {};
-    virtual Color f(const Vector3f &wi, const Vector3f &wo, const SurfaceInteraction &isect) const;
-    PrincipledParameters parameters;
-
-    private:
-    Color EvaluateDiffuse(const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n) const;
-    Color EvaluateSpecularBRDF(const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n) const;
-    double GTR2(const Vector3f &wh, const Normal3f &n) const;
-    double GeoMasking(const Vector3f &wi, const Vector3f &wo, const Normal3f &n) const;
-    double Fresnel(const Vector3f &wh, const Vector3f &wo) const;
-    
 };
+
 
 
 

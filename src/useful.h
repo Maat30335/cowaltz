@@ -9,7 +9,7 @@
 
 
 static const double OneMinusEpsilon = 0x1.fffffep-1;
-static const double Epsilon = 0.000000000001;
+static const double Epsilon = 0.000000001;
 static const double Pi = 3.1415926;
 
 inline void Error(std::string s){
@@ -34,6 +34,12 @@ inline double random_double() {
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);
     static std::mt19937 generator;
     return distribution(generator);
+}
+
+inline Point2f randomInCircle(const Point2f &p){
+    double r = std::sqrt(p.x);
+    double theta = 2 * Pi * p.y;
+    return Point2f(r * std::cos(theta), r * std::sin(theta));
 }
 
 inline Vector3f randomInSphere(){

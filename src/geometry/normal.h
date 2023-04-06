@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cassert>
 #include "vector.h"
+#include <iostream>
 
 
 template <typename T> 
@@ -112,6 +113,11 @@ class Normal3{
 
 
 };
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream &out, const Normal3<T> &v) {
+    return out << v.x << ' ' << v.y << ' ' << v.z;
+}
 
 
 

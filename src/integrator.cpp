@@ -26,7 +26,7 @@ void SamplerIntegrator::Render(const Primitive &scene){
                 // std::cout << "Point2i: " << i << ", " << j << std::endl;
                 Ray r = camera->GenerateRay(sample, Point2i(i, j));
                 
-                c = c + rayColor(r, scene, 4);
+                c = c + rayColor(r, scene, 5);
                 
             }
             c = c * scale;
@@ -53,7 +53,31 @@ Color LambertIntegrator::rayColor(const Ray &r, const Primitive &scene, int dept
                 Vector3f wi = Normalize((Vector3f)isect.n + Normalize(randomInSphere()));
                 Vector3f wo = Normalize(r.d);
 
-                return isect.bsdf->f(wi, -wo, isect) * rayColor(Ray(isect.p + Epsilon * (Vector3f)isect.n, wi), scene, depth - 1);
+                return 0.5 * rayColor(Ray(isect.p + Epsilon * (Vector3f)isect.n, wi), scene, depth - 1);
+            }else{
+
+                Vector3f unit_direction = Normalize(r.d);
+                auto t = 0.5*(unit_direction.y + 1.0);
+                return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
+            }
+
+}
+
+Color DisneyIntegrator::rayColor(const Ray &r, const Primitive &scene, int depth) const{
+    if(depth <= 0){
+        return Color(0, 0, 0);
+    }
+    SurfaceInteraction isect;
+    if(scene.Intersect(r, &isect)){
+                BSDFSample sample;
+                Vector3f wo = Normalize(-r.d);
+                sample = Disney::SampleDisney(isect, wo);
+                Vector3f wi = sample.wi;
+                if(sample.isBlack){
+                    return Color(0, 0, 0);
+                }
+                Point3f pHit = sample.hitIn ? isect.p + Epsilon * -(Vector3f)isect.n : isect.p + Epsilon * (Vector3f)isect.n;
+                return sample.reflectance * rayColor(Ray(pHit, wi), scene, depth - 1);
             }else{
 
                 Vector3f unit_direction = Normalize(r.d);

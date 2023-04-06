@@ -87,6 +87,8 @@ Transform Scale(double x, double y, double z);
 Transform RotateX(double theta);
 Transform RotateY(double theta);
 Transform RotateZ(double theta);
+Transform ToSpace(const Vector3f &v);
+Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up);
 
 
 

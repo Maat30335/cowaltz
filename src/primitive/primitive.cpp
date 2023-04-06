@@ -4,7 +4,7 @@
 bool GeoPrimitive::Intersect(const Ray &r, SurfaceInteraction *isect) const{
     if(!shape->WorldBounds().IntersectP(r, nullptr, nullptr)) return false;
     if(shape->Intersect(r, &r.tMax, isect)){
-        material->UpdateBSDF(isect);
+        isect->parameters = material->getSurface(isect->uv);
         return true;
     }
     return false;

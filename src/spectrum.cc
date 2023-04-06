@@ -64,3 +64,7 @@ Color Color::operator+(double d) const{
         b *= inv;
         return *this;
     }
+
+    Color Color::operator-() const{
+        return Color(-r, -g, -b);
+    }
