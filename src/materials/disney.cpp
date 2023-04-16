@@ -52,21 +52,23 @@ double Disney::SmithGGX(const PrincipledParameters &parameters, const Vector3f &
 Color Disney::SchlickFresnel(const PrincipledParameters &parameters, const Vector3f &wh, const Vector3f &wo, const Vector3f &wi){
     double f0 = pow((parameters.IOR - 1) / (parameters.IOR + 1), 2); 
     Color F0 = f0 * (1 - parameters.metallic) + parameters.baseColor * (parameters.metallic);
-    float dFresnel = f0 + (1 - f0) * pow((1 - AbsDot(wh, wo)), 5);
+   double dFresnel = f0 + (1 - f0) * pow((1 - AbsDot(wh, wo)), 5);
     Color mFresnel = F0 + (1 + (-F0)) * pow((1 - AbsDot(wh, wi)), 5);
     return dFresnel * (1 - parameters.metallic) + mFresnel * (parameters.metallic);
 }
 
-Color Disney::EvaluateSpecBRDF(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n){
-    float dotNL = Dot(wi, n);
-    float dotNV = Dot(wo, n);
+Color Disney::EvaluateSpecBRDF(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wh, const Normal3f &n, double *pdf){
+   double dotNL = Dot(wi, n);
+   double dotNV = Dot(wo, n);
     if(dotNL <= 0 || dotNV <= 0){ // perhaps not necessary
         return Color(0,0,0);
     }
 
-    float d = GTR2(parameters, wh, n);
-    float g = SmithGGX(parameters, wi, wo, wh, n);
+   double d = GTR2(parameters, wh, n);
+   double g = SmithGGX(parameters, wi, wo, wh, n);
     Color f = SchlickFresnel(parameters, wh, wo, wi);
+
+    *pdf = d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) / (4 * std::abs(dotNV)); // the other term cancels out surely
 
     return (d * g * f) / (4. * dotNL * dotNV);
 }
@@ -93,7 +95,7 @@ double FrDielectric(double cosThetaI, double etaI, double etaT){
     return (Rparl * Rparl + Rperp * Rperp) / 2;
 }
 
-Color Disney::EvaluateSpecTransmission(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wt, const Normal3f &n){
+Color Disney::EvaluateSpecTransmission(const PrincipledParameters &parameters, const Vector3f &wi, const Vector3f &wo, const Vector3f &wt, const Normal3f &n, double *pdf){
     double absDotNL = AbsDot(wi, n);
     double absDotNV = AbsDot(wo, n);
     double dotHL = Dot(wt, wi);
@@ -107,6 +109,9 @@ Color Disney::EvaluateSpecTransmission(const PrincipledParameters &parameters, c
 
     double c = (absDotHL * absDotHV) / (absDotNL * absDotNV);
     double t = (pow(parameters.IOR, 2) / pow(dotHL + parameters.IOR * dotHV, 2));
+    double relativeIOR = wo.y > 0 ? 1. / parameters.IOR : parameters.IOR;
+
+    *pdf = d * G1(wo, wt, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) * absDotHV / (absDotNV * pow(dotHL + relativeIOR * dotHV, 2));
     return parameters.baseColor * c * t * (1. - f) * g * d;
 }
 
@@ -186,6 +191,8 @@ BSDFSample Disney::SampleSpecBRDF(const PrincipledParameters &parameters, const 
 
     sample.reflectance = g * fresnel;
     }
+    double d = GTR2(parameters, wh, Normal3f(0, 1, 0));
+    sample.pdf = d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) / (4 * AbsDot(wo, Normal3f(0, 1, 0)));
     
     sample.wi = wi;
     return sample;
@@ -206,6 +213,7 @@ BSDFSample Disney::SampleDiffuse(const PrincipledParameters &parameters, const V
     Color diffuse = EvaluateDiffuse(parameters, wi, wo, wh, Normal3f(0, 1, 0));
     sample.reflectance = diffuse;
     sample.wi = wi;
+    sample.pdf = wi.y;
     return sample;
 }
 
@@ -226,7 +234,6 @@ BSDFSample Disney::SampleSpecTrans(const PrincipledParameters &parameters, const
     if(wo.y < 0.){
         dotHV = -dotHV;
     }
-
     
 
     double F = FrDielectric(dotHV, 1., parameters.IOR);
@@ -238,12 +245,15 @@ BSDFSample Disney::SampleSpecTrans(const PrincipledParameters &parameters, const
     if(random_double() <= F){
         wi = Normalize(reflect(wo, wh));
         sample.reflectance = Color(g, g, g);
+        sample.pdf = F / (4 * std::abs(dotHV));
     }else{
         double relativeIOR = wo.y > 0 ? 1. / parameters.IOR : parameters.IOR;
         if(transmit(wo, wh, relativeIOR, wi)){
             wi = Normalize(wi);
             
             sample.reflectance = Color(g, g, g);
+            double dotLH = AbsDot(wi, wh);
+            sample.pdf = (1 - F) * pow(dotLH + relativeIOR * dotHV, 2) / dotLH;
         }else{
             std::cout << "wo:" << wo << std::endl;
             std::cout << "wh:" << wh << std::endl;
@@ -252,10 +262,12 @@ BSDFSample Disney::SampleSpecTrans(const PrincipledParameters &parameters, const
             std::cout << "relativeIOR: " << relativeIOR << std::endl;
             std::cout << "bro wtf" << std::endl << std::endl;
             wi = Normalize(reflect(wo, wh));
-            
+            sample.pdf = 0; // cuz why not
             sample.reflectance = Color(g, g, g);
         }
     }
+    double d = GTR2(parameters, wh, Normal3f(0, 1, 0));
+    sample.pdf *= d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) * std::abs(dotHV) / AbsDot(wo, Normal3f(0, 1, 0));
     sample.wi = wi;
     return sample;
 
@@ -292,14 +304,17 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
     }else if(p <= (pSpecular + pDiffuse)){
         sample = SampleDiffuse(parameters, wo);
         pLobe = pDiffuse;
+        if(parameters.roughness <= 0.01) sample.isDirac = true;
     }else if(pSpecTrans > 0){
         sample = SampleSpecTrans(parameters, wo);
         pLobe = pSpecTrans;
+        if(parameters.roughness <= 0.01) sample.isDirac = true;
     }else{
         std::cout << "now u really fucked up" << std::endl;
     }
 
     sample.reflectance = sample.reflectance / pLobe;
+    sample.pdf *= pLobe;
     if(sample.wi.y < 0){
         sample.hitIn = true;
     }
@@ -312,6 +327,53 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
     // std::cout << std::endl;
 
     return sample;
+}
+
+Color Disney::EvaluateDisney(const SurfaceInteraction &isect, const Vector3f &v, const Vector3f &l, double *pdf){
+    PrincipledParameters parameters = isect.parameters;
+    Transform spaceToTangent = ToSpace((Vector3f)isect.n);
+    Transform tangentToSpace = Inv(spaceToTangent);
+    // one day we will add normal maps
+
+    Vector3f wo = Normalize(spaceToTangent(v));
+    Vector3f wi = Normalize(spaceToTangent(l));
+    Vector3f wh = Normalize(wo + wi);
+
+    *pdf = 0;
+    Color reflectance{0, 0, 0};
+
+    double pSpecular;
+    double pDiffuse;
+    double pSpecTrans;
+    CalculateLobePDF(parameters, pSpecular, pDiffuse, pSpecTrans);
+
+    double dotNL = Dot(wi, Normal3f(0, 1, 0));
+    double dotNV = Dot(wo, Normal3f(0, 1, 0));
+
+    bool upperHemisphere = dotNL > 0. && dotNV > 0.;
+
+    if(upperHemisphere){
+        if(pDiffuse > 0.){
+            reflectance += pDiffuse * EvaluateDiffuse(parameters, wi, wo, wh, Normal3f(0, 1, 0));
+            *pdf += pDiffuse * dotNL / Pi;
+        }
+        if(pSpecular > 0.){
+            double specPdf;
+            reflectance += pSpecular * EvaluateSpecBRDF(parameters, wi, wo, wh, Normal3f(0, 1, 0), &specPdf);
+            *pdf += pSpecular * specPdf;
+        }
+    }
+
+    if(pSpecTrans > 0.){
+        double transPdf;
+        reflectance += pSpecTrans * EvaluateSpecTransmission(parameters, wi, wo, wh, Normal3f(0, 1, 0), &transPdf);
+        *pdf += pSpecTrans * transPdf;
+    }
+
+    reflectance *= std::abs(dotNL);
+
+    return reflectance;
+
 }
 
 

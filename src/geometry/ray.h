@@ -4,6 +4,7 @@
 #include "vector.h"
 #include "point.h"
 #include <limits>
+#include <iostream>
 
 class Ray {
     public:
@@ -16,5 +17,9 @@ class Ray {
     Point3f operator()(double t) const {return o + d * t;};
 
 };
+
+inline std::ostream& operator<<(std::ostream &out, const Ray &r) {
+    return out << "o: " << r.o << " d: " << r.d << std::endl;
+}
 
 #endif

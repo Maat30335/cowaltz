@@ -14,6 +14,11 @@ bool BVHnode::Intersect(const Ray &r, SurfaceInteraction *isect) const{
     return leftHit || rightHit;
 }
 
+bool BVHnode::IntersectP(const Ray &r) const{
+    if(!bounds.IntersectP(r, nullptr, nullptr)) return false;
+    return (left->IntersectP(r) || right->IntersectP(r));
+}
+
 
 std::shared_ptr<Primitive> BVHnode::createBVH(const std::vector<std::shared_ptr<Primitive>> &prims){
     std::cout << "loading BVH..." << std::endl;

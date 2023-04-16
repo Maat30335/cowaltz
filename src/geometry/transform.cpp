@@ -114,10 +114,10 @@ Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
     cameraToWorld.m[2][3] = pos.z;
     cameraToWorld.m[3][3] = 1;
 
-    Vector3f dir = Normalize(look - pos);
+    Vector3f dir = Normalize(pos - look);
         //ah yes the left handed system
-       Vector3f right = -Normalize(Cross(Normalize(up), dir));
-       Vector3f newUp = -Cross(dir, right);
+       Vector3f right = Normalize(Cross(Normalize(up), dir));
+       Vector3f newUp = Cross(dir, right);
        cameraToWorld.m[0][0] = right.x;
        cameraToWorld.m[1][0] = right.y;
        cameraToWorld.m[2][0] = right.z;
@@ -131,5 +131,5 @@ Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
        cameraToWorld.m[2][2] = dir.z;
        cameraToWorld.m[3][2] = 0.;
 
-       return Transform(Inv(cameraToWorld), cameraToWorld);
+       return Transform(cameraToWorld, Inv(cameraToWorld));
 }

@@ -6,14 +6,12 @@
 #include "point.h"
 #include "parameters.h"
 #include "material.h"
-
-
-
+#include "light.h"
 
 struct SurfaceInteraction {
     // UV stuff with point2f
     SurfaceInteraction() {};
-    SurfaceInteraction(Point3f p, Point2f uv, Vector3f dpdu, Vector3f dpdv, Vector3f wo, Normal3f n) : p{p}, uv{uv}, dpdu{dpdu}, dpdv{dpdv}, wo{wo}, n{n} {};
+    SurfaceInteraction(Point3f p, Point2f uv, Vector3f dpdu, Vector3f dpdv, Vector3f wo, Normal3f n) : p{p}, uv{uv}, dpdu{dpdu}, dpdv{dpdv}, wo{wo}, n{n}, light{nullptr} {};
     Point3f p;
     Point2f uv;
     Vector3f dpdu;
@@ -21,7 +19,11 @@ struct SurfaceInteraction {
     Vector3f wo;
     Normal3f n; // note, this is not always normalized, it should be before shading occurs
     PrincipledParameters parameters;
+    const Light *light;
 
 };
+
+
+
 
 #endif

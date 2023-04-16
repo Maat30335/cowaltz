@@ -9,6 +9,7 @@ class BVHnode : public Primitive {
     public:
     static std::shared_ptr<Primitive> createBVH(const std::vector<std::shared_ptr<Primitive>> &prims);
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const;
+    virtual bool IntersectP(const Ray &r) const;
     virtual Bounds3f WorldBounds() const;
     BVHnode() {};
     BVHnode(std::shared_ptr<Primitive> left, std::shared_ptr<Primitive> right) : left{left}, right{right} {};

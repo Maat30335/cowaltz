@@ -1,4 +1,6 @@
 #include "triangle.h"
+#include "transform.h"
+#include "interaction.h"
 #include "useful.h"
 #include <iostream>
 #include <cmath>

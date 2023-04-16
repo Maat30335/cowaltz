@@ -3,13 +3,15 @@
 
 #include <memory>
 #include <vector>
-#include "interaction.h"
 #include "shape.h"
 #include "material.h"
+
+struct SurfaceInteraction;
 
 class Primitive {
     public:
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const = 0;
+    virtual bool IntersectP(const Ray &r) const;
     virtual Bounds3f WorldBounds() const = 0;
     virtual ~Primitive() {};
 };
@@ -23,12 +25,12 @@ class GeoPrimitive : public Primitive {
     private:
     std::shared_ptr<Shape> shape;
     std::shared_ptr<Material> material;
-    // material would also be here
 };
 
 class PrimitiveList : public Primitive {
     public:
     virtual bool Intersect(const Ray &r, SurfaceInteraction *isect) const;
+    virtual bool IntersectP(const Ray &r) const;
     virtual void addPrim(std::shared_ptr<Primitive> primitive);
     virtual void clearPrims();
     virtual Bounds3f WorldBounds() const;

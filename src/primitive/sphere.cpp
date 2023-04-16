@@ -1,5 +1,6 @@
 #include "sphere.h"
 #include "useful.h"
+#include "transform.h"
 
 
 bool Sphere::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) const{
