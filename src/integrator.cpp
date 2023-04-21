@@ -26,7 +26,7 @@ void SamplerIntegrator::Render(const Scene &scene){
                 // std::cout << "Point2i: " << i << ", " << j << std::endl;
                 Ray r = camera->GenerateRay(sample, Point2i(i, j));
                 
-                c = c + rayColor(r, scene, 5);
+                c = c + rayColor(r, scene, 4);
                 
             }
             c = c * scale;
@@ -119,7 +119,7 @@ Color DisneyIntegrator::rayColor(const Ray &r, const Scene &scene, int depth) co
         }else{
             Vector3f unit_direction = Normalize(ray.d);
                 auto t = 0.5*(unit_direction.y + 1.0);
-                // L += T * ((1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0));
+                L += T * ((1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0));
                 return L;
         }
     }

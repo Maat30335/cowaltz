@@ -9,7 +9,7 @@
 
 
 static const double OneMinusEpsilon = 0x1.fffffep-1;
-static const double Epsilon = 0.000000001;
+static const double Epsilon = 0.0000001;
 static const double Pi = 3.1415926;
 
 inline void Error(std::string s){

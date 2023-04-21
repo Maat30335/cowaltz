@@ -237,6 +237,11 @@ class Point2{
 };
 
 template <typename T>
+inline std::ostream& operator<<(std::ostream &out, const Point2<T> &v) {
+    return out << v.x << ' ' << v.y;
+}
+
+template <typename T>
 inline Point2<T> operator*(T s,const Point2<T> &p) {
     return p * s;
 }

@@ -68,7 +68,7 @@ Color Disney::EvaluateSpecBRDF(const PrincipledParameters &parameters, const Vec
    double g = SmithGGX(parameters, wi, wo, wh, n);
     Color f = SchlickFresnel(parameters, wh, wo, wi);
 
-    *pdf = d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) / (4 * std::abs(dotNV)); // the other term cancels out surely
+    *pdf = d * G1(wo, wh, n, pow(parameters.roughness, 2)) * AbsDot(wh, wi) / (4 * std::abs(dotNL) * AbsDot(wo, wh)); // the other term cancels out surely
 
     return (d * g * f) / (4. * dotNL * dotNV);
 }
@@ -111,7 +111,7 @@ Color Disney::EvaluateSpecTransmission(const PrincipledParameters &parameters, c
     double t = (pow(parameters.IOR, 2) / pow(dotHL + parameters.IOR * dotHV, 2));
     double relativeIOR = wo.y > 0 ? 1. / parameters.IOR : parameters.IOR;
 
-    *pdf = d * G1(wo, wt, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) * absDotHV / (absDotNV * pow(dotHL + relativeIOR * dotHV, 2));
+    *pdf = d * G1(wo, wt, n, pow(parameters.roughness, 2)) * std::abs(dotHL) / (absDotNL * pow(dotHL + relativeIOR * dotHV, 2));
     return parameters.baseColor * c * t * (1. - f) * g * d;
 }
 
@@ -192,7 +192,8 @@ BSDFSample Disney::SampleSpecBRDF(const PrincipledParameters &parameters, const 
     sample.reflectance = g * fresnel;
     }
     double d = GTR2(parameters, wh, Normal3f(0, 1, 0));
-    sample.pdf = d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) / (4 * AbsDot(wo, Normal3f(0, 1, 0)));
+    
+    sample.pdf = d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) * AbsDot(wh, wi) / (4 * AbsDot(wi, Normal3f(0, 1, 0)) * AbsDot(wo, wh));
     
     sample.wi = wi;
     return sample;
@@ -267,7 +268,7 @@ BSDFSample Disney::SampleSpecTrans(const PrincipledParameters &parameters, const
         }
     }
     double d = GTR2(parameters, wh, Normal3f(0, 1, 0));
-    sample.pdf *= d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) * std::abs(dotHV) / AbsDot(wo, Normal3f(0, 1, 0));
+    sample.pdf *= d * G1(wo, wh, Normal3f(0, 1, 0), pow(parameters.roughness, 2)) * AbsDot(wh, wi) / AbsDot(wi, Normal3f(0, 1, 0));
     sample.wi = wi;
     return sample;
 
@@ -277,8 +278,21 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
     PrincipledParameters parameters = isect.parameters;
      // std::cout << "Normal World: [" << isect.n.x << ", " << isect.n.y << ", " << isect.n.z << "]" << std::endl;
 
-    Transform spaceToTangent = ToSpace((Vector3f)isect.n);
-    Transform tangentToSpace = Inv(spaceToTangent);
+    Transform spaceToGeo = ToSpace(Normalize(isect.dpdu), (Vector3f)isect.n, Normalize(isect.dpdv));
+
+    /*
+
+    Transform spaceToShading = ToSpace(isect.shading.dpdu, (Vector3f)isect.shading.n, isect.shading.dpdv);
+    Transform shadingToSpace = Inv(spaceToGeo);
+
+    Transform shadingToMap = ToSpace((Vector3f)parameters.shadingN);
+    Transform mapToShading = Inv(shadingToMap);
+    */
+
+    Transform spaceToMap = ToSpace((Vector3f)parameters.shadingN) * ToSpace(Normalize(isect.shading.dpdu), (Vector3f)isect.shading.n, Normalize(isect.shading.dpdv));
+    Transform mapToSpace = Inv(spaceToMap);
+
+
     /*
     Vector3f n = spaceToTangent((Vector3f)isect.n);
     std::cout << "Normal Tangent: [" << n.x << ", " << n.y << ", " << n.z << "]" << std::endl;
@@ -288,7 +302,7 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
 
 
 
-    Vector3f wo = Normalize(spaceToTangent(v));
+    Vector3f wo = Normalize(spaceToMap(v));
     
     double pSpecular;
     double pDiffuse;
@@ -299,13 +313,25 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
     BSDFSample sample;
 
     if(p <= pSpecular){
+        if(wo.y <= 0){
+            sample.isBlack = true;
+            return sample;
+        }
         sample = SampleSpecBRDF(parameters, wo);
         pLobe = pSpecular;
     }else if(p <= (pSpecular + pDiffuse)){
+        if(wo.y <= 0){
+            sample.isBlack = true;
+            return sample;
+        }
         sample = SampleDiffuse(parameters, wo);
         pLobe = pDiffuse;
         if(parameters.roughness <= 0.01) sample.isDirac = true;
     }else if(pSpecTrans > 0){
+        if(spaceToGeo(v).y >= 0 && wo.y <= 0){
+            sample.isBlack = true;
+            return sample;
+        }
         sample = SampleSpecTrans(parameters, wo);
         pLobe = pSpecTrans;
         if(parameters.roughness <= 0.01) sample.isDirac = true;
@@ -313,13 +339,24 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
         std::cout << "now u really fucked up" << std::endl;
     }
 
-    sample.reflectance = sample.reflectance / pLobe;
-    sample.pdf *= pLobe;
     if(sample.wi.y < 0){
         sample.hitIn = true;
     }
+
     
-    sample.wi = tangentToSpace(sample.wi);
+
+    sample.wi = mapToSpace(sample.wi);
+
+    if(spaceToGeo(sample.wi).y < 0 && !sample.hitIn){
+        sample.isBlack = true;
+        return sample;
+    }
+
+    sample.reflectance = sample.reflectance / pLobe;
+    sample.pdf *= pLobe;
+    
+
+    
 
     // std::cout << "Outgoing: [" << wo.x << ", " << wo.y << ", " << wo.z << "]" << std::endl;
     // std::cout << "Incoming: [" << sample.wi.x << ", " << sample.wi.y << ", " << sample.wi.z << "]" << std::endl;
@@ -331,12 +368,13 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
 
 Color Disney::EvaluateDisney(const SurfaceInteraction &isect, const Vector3f &v, const Vector3f &l, double *pdf){
     PrincipledParameters parameters = isect.parameters;
-    Transform spaceToTangent = ToSpace((Vector3f)isect.n);
-    Transform tangentToSpace = Inv(spaceToTangent);
+    Transform spaceToMap = ToSpace((Vector3f)parameters.shadingN) * ToSpace(Normalize(isect.shading.dpdu), (Vector3f)isect.shading.n, Normalize(isect.shading.dpdv));
+    Transform mapToSpace = Inv(spaceToMap);
     // one day we will add normal maps
+    // update: normal maps were added ez
 
-    Vector3f wo = Normalize(spaceToTangent(v));
-    Vector3f wi = Normalize(spaceToTangent(l));
+    Vector3f wo = Normalize(spaceToMap(v));
+    Vector3f wi = Normalize(spaceToMap(l));
     Vector3f wh = Normalize(wo + wi);
 
     *pdf = 0;

@@ -107,6 +107,15 @@ Transform ToSpace(const Vector3f &v){
     return Transform(m, mInv);
 }
 
+Transform ToSpace(const Vector3f &v0, const Vector3f &v1, const Vector3f &v2){
+    Matrix4x4 mInv(v0.x, v1.x, v2.x, 0,
+                v0.y, v1.y, v2.y, 0,
+                v0.z, v1.z, v2.z, 0,
+                0, 0, 0, 1);
+    Matrix4x4 m = Inv(mInv);
+    return Transform(m, mInv);
+}
+
 Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
     Matrix4x4 cameraToWorld;
     cameraToWorld.m[0][3] = pos.x;

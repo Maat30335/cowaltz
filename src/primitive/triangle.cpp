@@ -103,6 +103,13 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
     Point2f uv[3];
     GetUVs(uv);
 
+    /*
+    if(mesh->uv){
+        std::cout << "indices: " << nv[0] << ", " << nv[1] << ", " << nv[2] << std::endl;
+        std::cout << "Weights: w = " << w << ", u = " << u << ", v = " << v << std::endl << std::endl;
+    }
+    */
+
     Point2f uvHit = w * uv[0] + u * uv[1] + v * uv[2];
 
     Vector2f duv02 = uv[0] - uv[2], duv12 = uv[1] - uv[2];
@@ -114,26 +121,25 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
         CoordinateSystem(Cross(v0v1, v0v2), &dpdu, &dpdv);
     }else{
         invDet = 1 / det;
-        dpdu = ( duv12[1] * dp02 - duv02[1] * dp12) * invDet;
+        dpdu = ( duv12[1] * dp02 - duv02[1] * dp12) * invDet; // normalizing since I don't think we need the originals oop
         dpdv = (-duv12[0] * dp02 + duv02[0] * dp12) * invDet;
     }
 
-    Normal3f nHit;
+    
 
-    if(mesh->n){
-        nHit = Normalize(w * mesh->n[nv[0]] + u * mesh->n[nv[1]] + v * mesh->n[nv[2]]);
-        dpdu = Normalize(dpdu - (Dot(dpdu, nHit)) * (Vector3f)nHit);
-        dpdv = Normalize(dpdv - (Dot(dpdv, nHit)) * (Vector3f)nHit);
+    Normal3f nHit = (Normal3f)Normalize((Cross(p0 - p2, p1 - p2)));
 
-    }else{
-
-        nHit = (Normal3f)Normalize((Cross(p0 - p2, p1 - p2)));
-        // if we don't have normals, dont assume we have good partial derivatives (for now)
-        CoordinateSystem((Vector3f)nHit, &dpdu, &dpdv);
-
-    }
 
     *isect = SurfaceInteraction(pHit, uvHit, dpdu, dpdv, -r.d, nHit);
+
+    if(mesh->n){
+        // phong shading, as well as some sus tangent vectors calculation
+        isect->shading.n = Normalize(w * mesh->n[nv[0]] + u * mesh->n[nv[1]] + v * mesh->n[nv[2]]);
+        isect->shading.dpdu = Cross(dpdv, (Vector3f)isect->shading.n);
+        if(Dot(dpdu, isect->shading.dpdu) < 0) isect->shading.dpdu = -isect->shading.dpdu;
+        isect->shading.dpdv = Cross(isect->shading.dpdu, (Vector3f)isect->shading.n);
+        if(Dot(dpdv, isect->shading.dpdv) < 0) isect->shading.dpdv = -isect->shading.dpdv;
+    }
 
     return true;
 
