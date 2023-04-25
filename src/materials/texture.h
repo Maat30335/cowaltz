@@ -20,20 +20,6 @@ class SolidColor : public Texture {
     Color color;
 };
 
-class Image_Texture : public Texture {
-    public:
-    const static int bytes_per_pixel = 3;
-    virtual Color getColor(const Point2f &uv) const;
-    Image_Texture() : data(nullptr), width(0), height(0), bytes_per_scanline(0) {};
-    Image_Texture(const char*  filename);
-    ~Image_Texture();
-    private:
-        unsigned char *data;
-        int width, height;
-        int bytes_per_scanline;
-
-};
-
 
 
 

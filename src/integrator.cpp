@@ -26,7 +26,7 @@ void SamplerIntegrator::Render(const Scene &scene){
                 // std::cout << "Point2i: " << i << ", " << j << std::endl;
                 Ray r = camera->GenerateRay(sample, Point2i(i, j));
                 
-                c = c + rayColor(r, scene, 4);
+                c = c + rayColor(r, scene, 10);
                 
             }
             c = c * scale;
@@ -95,31 +95,66 @@ Color DisneyIntegrator::rayColor(const Ray &r, const Scene &scene, int depth) co
             bool isDirac = (1 - isect.parameters.metallic) * (1 - isect.parameters.specTrans) == 0. && isect.parameters.roughness <= 0.01;
 
             if(isect.light){
-                Color emit = oldDirac ? isect.light->getEmittance() : isect.light->getEmittance() * oldPDF / (oldPDF + isect.light->pdf(wi, ray.o, pHit));
-                L += T * emit;
+                if(Dot(wo, isect.n) >= 0.){
+                    Color emit = oldDirac ? isect.light->getEmittance() : isect.light->getEmittance() * oldPDF / (oldPDF + isect.light->pdf(wi, ray.o, pHit));
+                    /*
+                        std::cout << "BSDF sample" << std::endl;
+                        std::cout << "BSDF PDF: " << oldPDF << std::endl;
+                        std::cout << "Light PDF: " << isect.light->pdf(wi, ray.o, pHit) << std::endl << std::endl;
+                    */
+                    
+                    L += T * emit;
+                }
+                return L;
                 // std::cout << "light?: " << L << std::endl;
 
             } else if(!scene.lights.empty() && !isDirac){ // sampling light
-
+                // std::cout << "isect.p.y: " << isect.p.y << std::endl;
                 int index = (int)(random_double() * scene.lights.size());
                 LightSample lSample = scene.lights[index]->Sample_Li(isect.p);
-                Ray lightRay{pHit, lSample.wi, lSample.tHit - Epsilon};
+                Ray lightRay{pHit, lSample.wi, lSample.tHit - 0.01};
+                /*
+                SurfaceInteraction lisect;
+                std::cout << "light ray: " << lightRay << std::endl;
+                std::cout << "intersect?: " << scene.scene->Intersect(lightRay, &lisect) << std::endl;
+                std::cout << "lisect.p: " << lisect.p << std::endl;
+                std::cout << "max ray: " << lightRay(lSample.tHit - 0.01) << std::endl;
+                */
+
                 if(!lSample.isBlack && !scene.scene->IntersectP(lightRay)){
+                    bool fakeDirac = (1 - isect.parameters.metallic) * (1 - isect.parameters.specTrans) == 0. && isect.parameters.roughness <= 0.05; // delete later
                     double pdf;
-                    Color emit = Disney::EvaluateDisney(isect, wi, wo, &pdf);
-                    L += T * (emit / (pdf + lSample.pdf));
+                    Color t = Disney::EvaluateDisney(isect, lSample.wi, wo, &pdf);
+
+                    /*
+                    if(fakeDirac){
+                        std::cout << "fakedirac moment" << std::endl;
+                        std::cout << "t: " << t << std::endl;
+                        std::cout << "pdf: " << pdf << std::endl;
+                        std::cout << "light pdf: " << lSample.pdf << std::endl << std::endl;
+                    }
+                    */
+
+                        /*
+                        std::cout << "light sample" << std::endl;
+                        std::cout << "t: " << t << std::endl;
+                        std::cout << "BSDF PDF: " << pdf << std::endl;
+                        std::cout << "Light PDF: " << lSample.pdf << std::endl << std::endl;
+                        */
+
+                    L += T * ((t * lSample.emittance) / (pdf + lSample.pdf));
                 }
 
             }
             
             T = T * sample.reflectance;
-            oldDirac = isDirac;
+            oldDirac = sample.isDirac;
             oldPDF = sample.pdf;
             ray = Ray(pHit, wi);
         }else{
             Vector3f unit_direction = Normalize(ray.d);
                 auto t = 0.5*(unit_direction.y + 1.0);
-                L += T * ((1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0));
+                // L += T * ((1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0));
                 return L;
         }
     }

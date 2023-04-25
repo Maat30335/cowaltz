@@ -142,3 +142,12 @@ Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
 
        return Transform(cameraToWorld, Inv(cameraToWorld));
 }
+
+std::pair<Transform*, Transform*> Transform_Pool::getTransform(const Transform &transform){
+    auto trans = std::make_unique<Transform>(transform);
+    auto transInv = std::make_unique<Transform>(Inv(transform));
+    std::pair<Transform*, Transform*> pair(trans.get(), transInv.get());
+    transforms.push_back(std::move(trans));
+    transforms.push_back(std::move(transInv));
+    return pair;
+}

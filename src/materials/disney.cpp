@@ -70,6 +70,17 @@ Color Disney::EvaluateSpecBRDF(const PrincipledParameters &parameters, const Vec
 
     *pdf = d * G1(wo, wh, n, pow(parameters.roughness, 2)) * AbsDot(wh, wi) / (4 * std::abs(dotNL) * AbsDot(wo, wh)); // the other term cancels out surely
 
+    /*
+    if(parameters.roughness <= 0.05){
+        std::cout << "d: " << d << std::endl;
+        std::cout << "wo: " << wo << std::endl;
+        std::cout << "wi: " << wi << std::endl;
+        std::cout << "wh: " << wh << std::endl;
+        std::cout << "n: " << n << std::endl;
+        std::cout << "g: " << g << std::endl;
+    }
+    */
+
     return (d * g * f) / (4. * dotNL * dotNV);
 }
 
@@ -319,14 +330,19 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
         }
         sample = SampleSpecBRDF(parameters, wo);
         pLobe = pSpecular;
+        if(parameters.roughness <= 0.01) sample.isDirac = true;
     }else if(p <= (pSpecular + pDiffuse)){
         if(wo.y <= 0){
             sample.isBlack = true;
+            /*
+            std::cout << "normal map: " << parameters.shadingN << std::endl;
+            std::cout << "wo(map space): " << wo << std::endl;
+            std::cout << "wo(geo space): " << spaceToGeo(v) << std::endl << std::endl;
+            */
             return sample;
         }
         sample = SampleDiffuse(parameters, wo);
         pLobe = pDiffuse;
-        if(parameters.roughness <= 0.01) sample.isDirac = true;
     }else if(pSpecTrans > 0){
         if(spaceToGeo(v).y >= 0 && wo.y <= 0){
             sample.isBlack = true;
@@ -349,6 +365,15 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
 
     if(spaceToGeo(sample.wi).y < 0 && !sample.hitIn){
         sample.isBlack = true;
+        /*
+        std::cout << "wi is under geo" << std::endl;
+        std::cout << "normal map: " << parameters.shadingN << std::endl;
+        std::cout << "wo(map space): " << wo << std::endl;
+        std::cout << "wo(geo space): " << spaceToGeo(v) << std::endl;
+        std::cout << "wi(map space): " << spaceToMap(sample.wi) << std::endl;
+        std::cout << "wi(geo space): " << spaceToGeo(sample.wi) << std::endl << std::endl;
+        */
+
         return sample;
     }
 
@@ -397,7 +422,13 @@ Color Disney::EvaluateDisney(const SurfaceInteraction &isect, const Vector3f &v,
         }
         if(pSpecular > 0.){
             double specPdf;
-            reflectance += pSpecular * EvaluateSpecBRDF(parameters, wi, wo, wh, Normal3f(0, 1, 0), &specPdf);
+            Color out = EvaluateSpecBRDF(parameters, wi, wo, wh, Normal3f(0, 1, 0), &specPdf);
+            /*
+            if(isect.parameters.roughness <= 0.05){
+                std::cout << "t (specular): " << out << std::endl;
+            }
+            */
+            reflectance += pSpecular * out; // * EvaluateSpecBRDF(parameters, wi, wo, wh, Normal3f(0, 1, 0), &specPdf);
             *pdf += pSpecular * specPdf;
         }
     }

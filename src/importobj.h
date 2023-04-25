@@ -94,6 +94,25 @@ namespace importOBJ{
 
     }
 
+    void addOBJ(std::vector<std::shared_ptr<Primitive>> &mesh, const char* filename, Transform* transform, Transform* inverse,std::shared_ptr<Material> material){
+        std::unique_ptr<Point3f[]> verts;
+        std::unique_ptr<Normal3f[]> normals;
+        std::unique_ptr<Point2f[]> uvs;
+        std::unique_ptr<int[]> vertexIndices;
+        int nVertices;
+        int nTriangles;
+
+        importOBJ::loadOBJ(filename, verts, normals, uvs, vertexIndices, nVertices, nTriangles);
+        
+        std::vector<std::shared_ptr<Shape>> triangles = CreateTriangleMesh(transform, inverse, 
+                nTriangles, vertexIndices.get(), nVertices, verts.get(), normals.get(), uvs.get());
+
+        for(int i = 0; i < nTriangles; i++){
+            std::shared_ptr<Primitive> tri = std::make_shared<GeoPrimitive>(triangles[i], material);
+            mesh.push_back(tri);
+        }
+    }
+
 };
 
 

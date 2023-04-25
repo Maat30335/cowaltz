@@ -21,6 +21,7 @@
 #include "scene.h"
 #include "light.h"
 #include "texture.h"
+#include "image.h"
 
 
 
@@ -30,75 +31,57 @@ int main(){
    
 
     std::shared_ptr<PrimitiveList> scene = std::make_shared<PrimitiveList>();
-
-    
+    Image_Pool images;
+    Transform_Pool transforms;
+    Scene theScene;
+    std::vector<std::shared_ptr<Primitive>> mesh;
     
     
     
     const Point2i resolution{512, 512};
 
+    auto identity = transforms.getTransform(Transform());
    
+    std::unique_ptr<Texture> black = std::make_unique<SolidColor>(Color(0, 0, 0));
+
+    std::shared_ptr<Material> red = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.65, 0.05, 0.05), 1, 1.6, 0, 0));
+    std::shared_ptr<Material> green = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.12, 0.45, 0.15), 1, 1.6, 0, 0));
+    std::shared_ptr<Material> white = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.73, 0.73, 0.73), 1, 1.6, 0, 0));
+    std::shared_ptr<Material> bunny = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.15, 0.15, 0.73), 0.05, 1.6, 0, 0));
+    std::shared_ptr<Material> cow = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.73, 0.73, 0.73), 0.2, 1.6, 1, 0));
+
+
+    importOBJ::addOBJ(mesh, "CornellBox/whitewall.obj", identity.first, identity.second, white);
+    importOBJ::addOBJ(mesh, "CornellBox/redwall.obj", identity.first, identity.second, red);
+    importOBJ::addOBJ(mesh, "CornellBox/greenwall.obj", identity.first, identity.second, green);
+    importOBJ::addOBJ(mesh, "CornellBox/bunny.obj", identity.first, identity.second, bunny);
+    importOBJ::addOBJ(mesh, "CornellBox/cow.obj", identity.first, identity.second, cow);
+
+    auto lightTransform = transforms.getTransform(Translate(Vector3f(0.25, 1.56, -0.25)) * RotateZ(180));
+    std::shared_ptr<Light> light = std::make_shared<RectangleLight>(lightTransform.first, lightTransform.second, 0.5, 0.5, 30, Color(1, 1, 1));
+    theScene.lights.push_back(light);
+    mesh.push_back(light);
     
-
-    
-
-    std::unique_ptr<Point3f[]> verts;
-    std::unique_ptr<Normal3f[]> normals;
-    std::unique_ptr<Point2f[]> uvs;
-    std::unique_ptr<int[]> vertexIndices;
-    int nVertices;
-    int nTriangles;
-
-    importOBJ::loadOBJ("stuff/cube.obj", verts, normals, uvs, vertexIndices, nVertices, nTriangles);
-
-    Transform OBJPos = Translate(Vector3f(0, -.5, -1)) * RotateX(-80);
-    Transform OBJPosInv = Inv(OBJPos);
-    
-    std::vector<std::shared_ptr<Shape>> triangles = CreateTriangleMesh(&OBJPos, &OBJPosInv, 
-            nTriangles, vertexIndices.get(), nVertices, verts.get(), normals.get(), uvs.get());
-
-
-    std::vector<std::shared_ptr<Primitive>> mesh;
-
-    std::unique_ptr<Texture> albedo = std::make_unique<Image_Texture>("stuff/tj4kedvcw_2K_Albedo.jpg");
-    std::unique_ptr<Texture> normal = std::make_unique<SolidColor>(Color(0.5, 0.5, 1));
-    // std::unique_ptr<Texture> normal = std::make_unique<Image_Texture>("stuff/tj4kedvcw_2K_Normal.jpg");
-    std::unique_ptr<Texture> roughness = std::make_unique<Image_Texture>("stuff/tj4kedvcw_2K_Roughness.jpg");
-    std::unique_ptr<Texture> specTrans = std::make_unique<SolidColor>(Color(0, 0, 0));
-    std::unique_ptr<Texture> metallic = std::make_unique<SolidColor>(Color(0, 0, 0));
-
-    std::shared_ptr<Material> objMat = std::make_shared<PrincipledMaterial>(albedo.get(), roughness.get(), 1.6, metallic.get(), specTrans.get(), normal.get());
-
-    for(int i = 0; i < nTriangles; i++){
-        std::shared_ptr<Primitive> tri = std::make_shared<GeoPrimitive>(triangles[i], objMat);
-        mesh.push_back(tri);
-    }
 
     std::shared_ptr<Primitive> BVHmesh = BVHnode::createBVH(mesh);
     scene->addPrim(BVHmesh);
 
-
-    Transform SpherePos2 = Translate(Vector3f(-100, -1, -100));
-    Transform SpherePosInv2 = Inv(SpherePos2);
-    std::shared_ptr<Material> floor = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.5, 0.5, 0.5), 0.5, 1.5, 0., 0.));
-    std::shared_ptr<Shape> sphere2_shape = std::make_shared<Plane>(&SpherePos2, &SpherePosInv2, 200, 200);
-    std::shared_ptr<Primitive> sphere2_prim = std::make_shared<GeoPrimitive>(sphere2_shape, floor);
-    // scene->addPrim(sphere2_prim);
-
+    
     
     
 
 
     std::shared_ptr<Film> film = std::make_shared<Film>();
+
     
-    Transform cameraToWorld; // = LookAt(Point3f(4, 4, -5), Point3f(0, 0, -2), Vector3f(0, 1, 0));
-    std::shared_ptr<Camera> camera = std::make_shared<PerspectiveCamera>(&cameraToWorld, resolution, Radians(90.), 4, 0);
-    std::shared_ptr<PixelSampler> sampler = std::make_shared<StratifiedSampler>(100);
+    Transform cameraToWorld = LookAt(Point3f(0, 0.5, 2), Point3f(0, 0.65, 0), Vector3f(0, 1, 0));
+    std::shared_ptr<Camera> camera = std::make_shared<PerspectiveCamera>(&cameraToWorld, resolution, Radians(60), 4, 0);
+    std::shared_ptr<PixelSampler> sampler = std::make_shared<StratifiedSampler>(1024);
     std::cout << sampler->samplesPerPixel << std::endl;
     
     DisneyIntegrator pog{film, camera, sampler};
     std::cout << "Rendering... " << std::endl;
-    Scene theScene;
+    
     theScene.scene = scene;
     pog.Render(theScene);
     

@@ -18,6 +18,6 @@ PrincipledParameters ColorMaterial::getSurface(const Point2f &uv) const{
 PrincipledParameters PrincipledMaterial::getSurface(const Point2f &uv) const{
     PrincipledParameters output{baseColor->getColor(uv), roughness->getColor(uv).r, IOR, metallic->getColor(uv).r, specTrans->getColor(uv).r};
     Color normal = (2 * normalMap->getColor(uv)) + (-1.);
-    output.shadingN = Normal3f(normal.r, normal.b, normal.g);
+    output.shadingN = Normalize(Normal3f(normal.r, normal.b, normal.g)); // change back plz (rbg)
     return output;
 }

@@ -91,6 +91,13 @@ Transform ToSpace(const Vector3f &v);
 Transform ToSpace(const Vector3f &v0, const Vector3f &v1, const Vector3f &v2);
 Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up);
 
+class Transform_Pool {
+    public:
+    std::pair<Transform*, Transform*> getTransform(const Transform &transform);
+    private:
+    std::vector<std::unique_ptr<Transform>> transforms;
+};
+
 
 
 

@@ -31,6 +31,7 @@ LightSample RectangleLight::Sample_Li(const Point3f &p) const{
     LightSample sample;
     Point3f pHit = Point3f(random_double() * mesh->lenX, 0, random_double() * mesh->lenZ); // in object space
     Vector3f wi = pHit - (*(mesh->WorldToObject))(p);
+    sample.wi = (*(mesh->ObjectToWorld))(pHit) - p;
 
     if(wi.y >= 0){
         sample.isBlack = true;
@@ -38,7 +39,7 @@ LightSample RectangleLight::Sample_Li(const Point3f &p) const{
     }
 
     sample.isBlack = false;
-    sample.wi = (*(mesh->ObjectToWorld))(pHit) - p;
+    // move sample wi down here
 
     sample.tHit = sample.wi.Norm();
     sample.wi /= sample.tHit;
