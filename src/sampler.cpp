@@ -37,4 +37,9 @@ void StratifiedSampler::StartPixel(){
     }
 }
 
+std::unique_ptr<PixelSampler> StratifiedSampler::Clone() const{
+    std::unique_ptr<PixelSampler> out = std::make_unique<StratifiedSampler>(*this);
+    return out;
+}
+
 

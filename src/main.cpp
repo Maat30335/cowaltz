@@ -71,19 +71,20 @@ int main(){
     
 
 
-    std::shared_ptr<Film> film = std::make_shared<Film>();
+    std::shared_ptr<Film> film = std::make_shared<Film>(resolution);
 
     
     Transform cameraToWorld = LookAt(Point3f(0, 0.5, 2), Point3f(0, 0.65, 0), Vector3f(0, 1, 0));
     std::shared_ptr<Camera> camera = std::make_shared<PerspectiveCamera>(&cameraToWorld, resolution, Radians(60), 4, 0);
-    std::shared_ptr<PixelSampler> sampler = std::make_shared<StratifiedSampler>(1024);
+    std::shared_ptr<PixelSampler> sampler = std::make_shared<StratifiedSampler>(49);
     std::cout << sampler->samplesPerPixel << std::endl;
     
     DisneyIntegrator pog{film, camera, sampler};
     std::cout << "Rendering... " << std::endl;
     
     theScene.scene = scene;
-    pog.Render(theScene);
+    // pog.Render(theScene);
+    pog.MultiRender(theScene);
     
 
 

@@ -6,33 +6,71 @@
 #include "point.h"
 #include "vector.h"
 #include "disney.h"
+#include <thread>
+#include <vector>
 
+void SamplerIntegrator::ScanlineRender(int start, int end, const Scene &scene) const{
+    int imageWidth = camera->resolution.x;
+    std::unique_ptr<PixelSampler> threadSampler = sampler->Clone();
+    double scale = 1. / threadSampler->samplesPerPixel;
+    for(int j = start; j < end; j++){
+        std::cout << "Scanline... " << j << std::endl;
+        for(int i = 0; i < imageWidth; i++){
+            threadSampler->StartPixel();
+            Color c{0, 0, 0};
+            for(int k = 0; k < threadSampler->samplesPerPixel; k++){
+                Point2f sample = threadSampler->Get2D();
+                Ray r = camera->GenerateRay(sample, Point2i(i, j));
+                c = c + rayColor(r, scene, 10);
+            }
+            c = c * scale;
+            film->WriteColor(c, Point2i(i, j));
+        }
+    }
+}
 
-void SamplerIntegrator::Render(const Scene &scene){
-    std::ofstream file("test.ppm");
-    film->FirstLine(camera->resolution, file);
+void SamplerIntegrator::Render(const Scene &scene) const{
     int imageHeight = camera->resolution.y;
     int imageWidth = camera->resolution.x;
-    double scale = (double)1 / sampler->samplesPerPixel;
+    double scale = 1. / sampler->samplesPerPixel;
     for (int j = imageHeight-1; j >= 0; --j) {
         std::cout << "Scanline... " << j << std::endl;
         for (int i = 0; i < imageWidth; ++i) {
-            // std::cout << "Pixel... " << i << std::endl;
             sampler->StartPixel();
             Color c{0, 0, 0};
             for(int k = 0; k < sampler->samplesPerPixel; k++){
                 Point2f sample = sampler->Get2D();
-                // std::cout << "sample: " << sample.x << ", " << sample.y << std::endl;
-                // std::cout << "Point2i: " << i << ", " << j << std::endl;
                 Ray r = camera->GenerateRay(sample, Point2i(i, j));
-                
                 c = c + rayColor(r, scene, 10);
-                
             }
             c = c * scale;
-            film->WriteColor(c, file);
+            film->WriteColor(c, Point2i(i, j));
         }
     }
+    film->WriteFile("test.ppm");
+}
+
+void SamplerIntegrator::MultiRender(const Scene &scene) const{
+    int imageHeight = camera->resolution.y;
+    const int numThreads = 16;
+    std::vector<std::thread> threads;
+    const int chunk_size = imageHeight / numThreads;
+    int leftover = imageHeight % numThreads;
+    int start = 0;
+    int end;
+    for(int i = 0; i < numThreads; i++){
+        end = start + chunk_size;
+        if (leftover > 0) {
+            end++;
+            leftover--;
+        }
+        threads.emplace_back(&SamplerIntegrator::ScanlineRender, this, start, end, std::ref(scene));
+        start = end;
+    }
+    for (auto& thread : threads){
+        thread.join();
+    }
+    film->WriteFile("test.ppm");
 }
 
 Color RedIntegrator::rayColor(const Ray &r, const Scene &scene, int depth) const{

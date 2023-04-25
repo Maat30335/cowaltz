@@ -8,6 +8,7 @@
 #include "tiny_obj_loader.h"
 #include "point.h"
 #include "normal.h"
+#include "triangle.h"
 #include <iostream>
 
 namespace importOBJ{

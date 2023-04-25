@@ -12,11 +12,12 @@ class SamplerIntegrator {
     
     public:
     SamplerIntegrator(std::shared_ptr<Film> film, std::shared_ptr<Camera> camera, std::shared_ptr<PixelSampler> sampler) : film{film}, camera{camera}, sampler{sampler} {};
-    virtual void Render(const Scene &scene);
+    virtual void Render(const Scene &scene) const;
+    virtual void MultiRender(const Scene &scene) const;
     virtual ~SamplerIntegrator() {};
 
     private:
-
+    virtual void ScanlineRender(int start, int end, const Scene &scene) const;
     virtual Color rayColor(const Ray &r, const Scene &scene, int depth = 1) const = 0;
     std::shared_ptr<Film> film;
     std::shared_ptr<Camera> camera;
