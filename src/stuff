@@ -1,18 +1,15 @@
 std::shared_ptr<Material> red = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.65, 0.05, 0.05), 1, 1.6, 0, 0));
     std::shared_ptr<Material> green = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.12, 0.45, 0.15), 1, 1.6, 0, 0));
     std::shared_ptr<Material> white = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.73, 0.73, 0.73), 1, 1.6, 0, 0));
-    std::shared_ptr<Material> car = std::make_shared<PrincipledMaterial>(images.getImage("CornellBox/textures/car_d.png"),
-                                                                        images.getImage("CornellBox/textures/car_r.png"),
-                                                                        1.6,
-                                                                        images.getImage("CornellBox/textures/car_m.png"),
-                                                                        black.get(),
-                                                                        images.getImage("CornellBox/textures/car_n.png"));
+    std::shared_ptr<Material> cow = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(1., 0.84, 0.), 0.01, 1.6, 1, 0));
+    std::shared_ptr<Material> bunny = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.15, 0.15, 06), 0.5, 1.6, 0, 0));
 
 
-    importOBJ::addOBJ(mesh, "CornellBox/whitewall.obj", identity.first, identity.second, white);
-    importOBJ::addOBJ(mesh, "CornellBox/redwall.obj", identity.first, identity.second, red);
-    importOBJ::addOBJ(mesh, "CornellBox/greenwall.obj", identity.first, identity.second, green);
-    importOBJ::addOBJ(mesh, "CornellBox/coolCar.obj", identity.first, identity.second, car);
+    importOBJ::addOBJ(mesh, "Scenes/CornellBox/whitewall.obj", identity.first, identity.second, white);
+    importOBJ::addOBJ(mesh, "Scenes/CornellBox/redwall.obj", identity.first, identity.second, red);
+    importOBJ::addOBJ(mesh, "Scenes/CornellBox/greenwall.obj", identity.first, identity.second, green);
+    importOBJ::addOBJ(mesh, "Scenes/CornellBox/cowNormals.obj", identity.first, identity.second, car);
+    importOBJ::addOBJ(mesh, "Scenes/CornellBox/bunny.obj", identity.first, identity.second, car);
 
 
     auto lightTransform = transforms.getTransform(Translate(Vector3f(0.25, 1.56, -0.25)) * RotateZ(180));

@@ -4,73 +4,73 @@ auto carPos = transforms.getTransform(Transform());
     std::unique_ptr<Texture> normal = std::make_unique<SolidColor>(Color(0.5, 0.5, 1));
 
 
-    std::shared_ptr<Material> body = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/body01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/body01_roughness.jpg"),
+    std::shared_ptr<Material> body = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/body01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/body01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/body01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/body01_metallic.jpg"),
                                                                         black.get(),
                                                                         normal.get());
     
-    std::shared_ptr<Material> FrWheels = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/frwheel01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/frwheel01_roughness.jpg"),
+    std::shared_ptr<Material> FrWheels = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/frwheel01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/frwheel01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/frwheel01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/frwheel01_metallic.jpg"),
                                                                         black.get(),
                                                                         normal.get());
 
-    std::shared_ptr<Material> instruments = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/instr01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/instr01_roughness.jpg"),
+    std::shared_ptr<Material> instruments = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/instr01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/instr01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/instr01_metallic.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/instr01_opacity.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/instr01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/instr01_opacity.jpg"),
                                                                         normal.get());
 
-    std::shared_ptr<Material> interior = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/intr01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/intr01_roughness.jpg"),
+    std::shared_ptr<Material> interior = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/intr01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/intr01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/intr01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/intr01_metallic.jpg"),
                                                                         black.get(),
-                                                                        images.getImage("CarScene/sovietcar/Textures/intr01_normal.jpg"));
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/intr01_normal.jpg"));
 
-    std::shared_ptr<Material> CarLights = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/lights01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/lights01_roughness.jpg"),
+    std::shared_ptr<Material> CarLights = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/lights01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/lights01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/lights01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/lights01_metallic.jpg"),
                                                                         black.get(),
                                                                         normal.get());
 
-    std::shared_ptr<Material> roof = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/roof01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/roof01_roughness.jpg"),
+    std::shared_ptr<Material> roof = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/roof01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/roof01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/roof01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/roof01_metallic.jpg"),
                                                                         black.get(),
-                                                                        images.getImage("CarScene/sovietcar/Textures/roof01_normal.jpg"));
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/roof01_normal.jpg"));
 
-    std::shared_ptr<Material> RWheels = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/rwheel01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/rwheel01_roughness.jpg"),
+    std::shared_ptr<Material> RWheels = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/rwheel01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/rwheel01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/rwheel01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/rwheel01_metallic.jpg"),
                                                                         black.get(),
                                                                         normal.get());                                                                    
 
-    std::shared_ptr<Material> StWheel = std::make_shared<PrincipledMaterial>(images.getImage("CarScene/sovietcar/Textures/stwheel01_albedo.jpg"),
-                                                                        images.getImage("CarScene/sovietcar/Textures/stwheel01_roughness.jpg"),
+    std::shared_ptr<Material> StWheel = std::make_shared<PrincipledMaterial>(images.getImage("Scenes/CarScene/sovietcar/Textures/stwheel01_albedo.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/stwheel01_roughness.jpg"),
                                                                         1.6,
-                                                                        images.getImage("CarScene/sovietcar/Textures/stwheel01_metallic.jpg"),
+                                                                        images.getImage("Scenes/CarScene/sovietcar/Textures/stwheel01_metallic.jpg"),
                                                                         black.get(),
                                                                         normal.get());
 
     std::shared_ptr<Material> glass = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(1, 1, 1), 0.01, 1.6, 0, 1));
 
-    importOBJ::addOBJ(mesh, "CarScene/processed/body.obj", carPos.first, carPos.second, body);
-    importOBJ::addOBJ(mesh, "CarScene/processed/FrontWheels.obj", carPos.first, carPos.second, FrWheels);
-    importOBJ::addOBJ(mesh, "CarScene/processed/glass.obj", carPos.first, carPos.second, glass);
-    importOBJ::addOBJ(mesh, "CarScene/processed/instruments.obj", carPos.first, carPos.second, instruments);
-    importOBJ::addOBJ(mesh, "CarScene/processed/interior.obj", carPos.first, carPos.second, interior);
-    importOBJ::addOBJ(mesh, "CarScene/processed/Lights.obj", carPos.first, carPos.second, CarLights);
-    importOBJ::addOBJ(mesh, "CarScene/processed/RearWheels.obj", carPos.first, carPos.second, RWheels);
-    importOBJ::addOBJ(mesh, "CarScene/processed/roof.obj", carPos.first, carPos.second, roof);
-    importOBJ::addOBJ(mesh, "CarScene/processed/STwheel.obj", carPos.first, carPos.second, StWheel);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/body.obj", carPos.first, carPos.second, body);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/FrontWheels.obj", carPos.first, carPos.second, FrWheels);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/glass.obj", carPos.first, carPos.second, glass);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/instruments.obj", carPos.first, carPos.second, instruments);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/interior.obj", carPos.first, carPos.second, interior);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/Lights.obj", carPos.first, carPos.second, CarLights);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/RearWheels.obj", carPos.first, carPos.second, RWheels);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/roof.obj", carPos.first, carPos.second, roof);
+    importOBJ::addOBJ(mesh, "Scenes/CarScene/processed/STwheel.obj", carPos.first, carPos.second, StWheel);
 
     auto planePos = transforms.getTransform(Translate(Vector3f(-250, 0, -250)));
     std::shared_ptr<Material> floorMat = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.15, 0.15, 0.5), 0.7, 1.6, 0, 0));
