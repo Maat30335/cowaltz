@@ -1,17 +1,21 @@
-bool transmit(const Vector3f &v, const Vector3f &wh, double relativeIOR, Vector3f &wi){
-    double cosThetaI = Dot(v, wh);
-    double sin2ThetaI = std::max(0., (1 - cosThetaI * cosThetaI));
-    double sin2ThetaT = relativeIOR * relativeIOR * sin2ThetaI;
-    if(sin2ThetaT > 1) return false;
-    double cosThetaT = std::sqrt(1 - sin2ThetaT);
-    wi = relativeIOR * -v + (relativeIOR * cosThetaI - cosThetaT) * wh;
-    return true;
-}
+std::shared_ptr<Material> red = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.65, 0.05, 0.05), 1, 1.6, 0, 0));
+    std::shared_ptr<Material> green = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.12, 0.45, 0.15), 1, 1.6, 0, 0));
+    std::shared_ptr<Material> white = std::make_shared<ConstantMaterial>(PrincipledParameters(Color(0.73, 0.73, 0.73), 1, 1.6, 0, 0));
+    std::shared_ptr<Material> car = std::make_shared<PrincipledMaterial>(images.getImage("CornellBox/textures/car_d.png"),
+                                                                        images.getImage("CornellBox/textures/car_r.png"),
+                                                                        1.6,
+                                                                        images.getImage("CornellBox/textures/car_m.png"),
+                                                                        black.get(),
+                                                                        images.getImage("CornellBox/textures/car_n.png"));
 
-bool transmit(const Vector3f &v, const Vector3f &wh, double relativeIOR, Vector3f &wi){
-    double dotVH = Dot(v, wh);
-    double sinTheta = relativeIOR * std::sqrt(1 - dotVH * dotVH);
-    if(sinTheta > 1) return false;
-    wi = relativeIOR * (-v) + (relativeIOR * dotVH - std::sqrt(1 - sinTheta * sinTheta)) * wh;
-    return true;
-}
+
+    importOBJ::addOBJ(mesh, "CornellBox/whitewall.obj", identity.first, identity.second, white);
+    importOBJ::addOBJ(mesh, "CornellBox/redwall.obj", identity.first, identity.second, red);
+    importOBJ::addOBJ(mesh, "CornellBox/greenwall.obj", identity.first, identity.second, green);
+    importOBJ::addOBJ(mesh, "CornellBox/coolCar.obj", identity.first, identity.second, car);
+
+
+    auto lightTransform = transforms.getTransform(Translate(Vector3f(0.25, 1.56, -0.25)) * RotateZ(180));
+    std::shared_ptr<Light> light = std::make_shared<RectangleLight>(lightTransform.first, lightTransform.second, 0.5, 0.5, 30, Color(1, 1, 1));
+    theScene.lights.push_back(light);
+    mesh.push_back(light);

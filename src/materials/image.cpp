@@ -26,7 +26,7 @@ Color Image_Texture::getColor(const Point2f &uv) const{
     }
 
 
-    int i = (int)(uv.x - floor(uv.x) * width);
+    int i = (int)((uv.x - floor(uv.x)) * width);
     int j = (int)(((1 - uv.y) - floor(1 - uv.y)) * height);
 
     if (i >= width)  i = width - 1;

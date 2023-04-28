@@ -141,7 +141,7 @@ Color DisneyIntegrator::rayColor(const Ray &r, const Scene &scene, int depth) co
                         std::cout << "Light PDF: " << isect.light->pdf(wi, ray.o, pHit) << std::endl << std::endl;
                     */
                     
-                    L += T * emit;
+                    L += T * emit * scene.lights.size();
                 }
                 return L;
                 // std::cout << "light?: " << L << std::endl;
@@ -180,7 +180,7 @@ Color DisneyIntegrator::rayColor(const Ray &r, const Scene &scene, int depth) co
                         std::cout << "Light PDF: " << lSample.pdf << std::endl << std::endl;
                         */
 
-                    L += T * ((t * lSample.emittance) / (pdf + lSample.pdf));
+                    L += T * ((t * lSample.emittance) / (pdf + lSample.pdf)) * scene.lights.size();
                 }
 
             }

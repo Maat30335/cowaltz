@@ -12,6 +12,7 @@ class Transform{
 private:
     Matrix4x4 m, mInv;
 public:
+    friend std::ostream& operator<<(std::ostream &out, const Transform &t);
     Transform() {};
     Transform(const double mat[4][4]);
     Transform(const Matrix4x4 &m) : m{m}, mInv{Inv(m)} {};
@@ -97,6 +98,16 @@ class Transform_Pool {
     private:
     std::vector<std::unique_ptr<Transform>> transforms;
 };
+
+inline std::ostream& operator<<(std::ostream &out, const Transform &t) {
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 4; j++){
+            out << t.m.m[i][j] << " ";
+        }
+        out << std::endl;
+    }
+    return out;
+}
 
 
 

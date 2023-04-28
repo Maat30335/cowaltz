@@ -106,9 +106,11 @@ bool Triangle::Intersect(const Ray &r, double *tHit, SurfaceInteraction *isect) 
     /*
     if(mesh->uv){
         std::cout << "indices: " << nv[0] << ", " << nv[1] << ", " << nv[2] << std::endl;
-        std::cout << "Weights: w = " << w << ", u = " << u << ", v = " << v << std::endl << std::endl;
+        std::cout << "Weights: w = " << w << ", u = " << u << ", v = " << v << std::endl;
+        std::cout << "UVs: " << uv[0] << " | " << uv[1] << " | " << uv[2] << std::endl << std::endl;
     }
     */
+    
 
     Point2f uvHit = w * uv[0] + u * uv[1] + v * uv[2];
 

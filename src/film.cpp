@@ -35,13 +35,14 @@ void Film::FirstLine(const Point2i &resolution, std::ofstream &file) const{
     file << "P3\n" << resolution.x << " " << resolution.y << "\n255\n";
 }
 
-void Film::WriteColor(Color c, std::ofstream &file) const{
-    c.r = std::sqrt(c.r);
-    c.g = std::sqrt(c.g);
-    c.b = std::sqrt(c.b);
-    int ir = static_cast<int>(255.999 * clamp(c.r, 0, 0.999));
-    int ig = static_cast<int>(255.999 * clamp(c.g, 0, 0.999));
-    int ib = static_cast<int>(255.999 * clamp(c.b, 0, 0.999));
+void Film::WriteColor(Color color, std::ofstream &file) const{
+
+    color.r = std::sqrt(color.r);
+    color.g = std::sqrt(color.g);
+    color.b = std::sqrt(color.b);
+    int ir = static_cast<int>(255.999 * clamp(color.r, 0, 0.999));
+    int ig = static_cast<int>(255.999 * clamp(color.g, 0, 0.999));
+    int ib = static_cast<int>(255.999 * clamp(color.b, 0, 0.999));
     file << ir << ' ' << ig << ' ' << ib << '\n';
 }
 

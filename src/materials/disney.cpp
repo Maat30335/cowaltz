@@ -157,7 +157,7 @@ Vector3f SampleGGX(const Vector3f &wo, double alpha, double rand1, double rand2)
 
     Vector3f wh = p1 * t1 + p2 * t2 + std::sqrt(std::max(0., 1. - p1 * p1 - p2 * p2)) * v;
 
-    return Normalize(Vector3f(wh.x * alpha, std::max(0., wh.y), wh.z * alpha));
+    return Normalize(Vector3f(wh.x * alpha, wh.y, wh.z * alpha));
 }
 
 Vector3f reflect(const Vector3f &v, const Vector3f &wh){
@@ -304,6 +304,7 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
     Transform mapToSpace = Inv(spaceToMap);
 
 
+
     /*
     Vector3f n = spaceToTangent((Vector3f)isect.n);
     std::cout << "Normal Tangent: [" << n.x << ", " << n.y << ", " << n.z << "]" << std::endl;
@@ -314,6 +315,7 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
 
 
     Vector3f wo = Normalize(spaceToMap(v));
+
     
     double pSpecular;
     double pDiffuse;
@@ -358,6 +360,7 @@ BSDFSample Disney::SampleDisney(const SurfaceInteraction &isect, const Vector3f 
     if(sample.wi.y < 0){
         sample.hitIn = true;
     }
+
 
     
 

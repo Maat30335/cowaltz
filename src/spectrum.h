@@ -18,6 +18,7 @@ class Color {
     bool operator!=(const Color &v) const;
     Color operator*(double s) const;
     Color operator*(const Color &v) const;
+    Color operator/(const Color &v) const;
     Color& operator*=(double s);
     Color operator/(double f) const;
     Color& operator/=(double f);
