@@ -2,7 +2,7 @@
 
 A photorealistic path-tracing renderer built for fun
 
-ZIS-101A Sport (1938) (707477 polygons, 4096 samples per pixel)
+ZIS-101A Sport (1938) (707477 polygons, 4096 samples per pixel). Model by [Comrade1280](https://sketchfab.com/comrade1280)
 
 ![Car Render](ProgressPics/Car.jpeg)
 
