@@ -14,7 +14,7 @@ Cornell Box with Bunny and Cow. The noise in this image is due to caustics from 
 
 Currently supports:
 - Disney BSDF (Glossy Reflection, Glass, etc.)
-- Texuture Mapping (& Normal Mapping)
+- Texture Mapping (& Normal Mapping)
 - Phong Shading
 - Area Lights (& Soft Shadows)
 - Depth of Field
